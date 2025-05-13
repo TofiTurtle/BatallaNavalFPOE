@@ -73,20 +73,30 @@ public class CharacterSelectorController {
 
         }
     }
+
+    /*
+    MUCHO CUIDADO CON ESTA IMPLEMENTACION HAY QUE TENER CUIDADO PQ HAY CIERTAS COSITAS QUE TODAVIA
+    NO ENTIENDO
+     */
     @FXML
-    private void playButton (ActionEvent event) throws IOException {
+    private void playButton(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/game-view.fxml"));
         Parent root = loader.load();
+
+        GameController gameController = loader.getController();
+        gameController.setCharacterImage(images.get(currentIndex));
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
-
     }
+
 
     Image getImage() {
         return images.get(currentIndex);
     }
 
+    int getIndex() {return currentIndex;}
 
 
 
