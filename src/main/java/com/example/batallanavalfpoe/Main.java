@@ -1,8 +1,17 @@
 package com.example.batallanavalfpoe;
 
-public class Main {
+import com.example.batallanavalfpoe.view.WelcomeStage;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import java.io.IOException;
+
+public class Main extends Application {
+    @Override
+    public void start(Stage stage) throws IOException {
+        new WelcomeStage();
+    }
+
     public static void main(String[] args) {
-        System.out.println("perrita");
-        System.out.println("prueba conexion github");
+        launch(args);
     }
 }
