@@ -12,7 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CharacterSelectorController {
@@ -41,9 +40,9 @@ public class CharacterSelectorController {
     @FXML
     public void initialize() {
         images = List.of(
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/imagenes/personajeUno.jpg")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/imagenes/personajeDos.jpg")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/imagenes/personajeTres.jpg"))
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeUno.jpg")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeDos.jpg")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeTres.jpg"))
         );
         imageView.setImage(images.get(currentIndex));
     }
