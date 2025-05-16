@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.view.GameStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -99,16 +100,14 @@ public class CharacterSelectorController {
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/game-view.fxml"));
-        Parent root = loader.load();
+        //se instancia geimstage y le pasamos por parametros la imaen y nombre
+        GameStage gameStage = new GameStage(images.get(currentIndex), name);
+        gameStage.show();
 
-        GameController gameController = loader.getController();
-        gameController.setCharacterImage(images.get(currentIndex));
-        gameController.setNameLabel(name);
+
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close(); //ojo vivo a esto pq es importante para que se cierre
     }
 
 }
