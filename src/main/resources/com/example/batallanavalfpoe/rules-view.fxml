@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.RulesController">
+   <top>
+      <Label text="¡Bienvenido a Batalla Naval: Aventura Espacial!" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets top="20.0" />
+         </padding>
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font></Label>
+   </top>
+   <center>
+      <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" maxWidth="700" text="🌊 En este juego, te enfrentas a una astuta máquina enemiga." textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label alignment="CENTER" maxWidth="700" text="🎯 Ambos tienen una flota de barcos escondida en su propio territorio." textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label alignment="CENTER" maxWidth="700" text="🗺 Tu misión: ¡Descubrir y hundir todos los barcos enemigos antes de que hundan los tuyos!" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label text="Flota">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font></Label>
+            <Label maxWidth="700" text="🚢 1 Portaaviones (4 casillas)" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label maxWidth="700" text="🌊 2 Submarinos (3 casillas)" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label maxWidth="700" text="🔱 3 Destructores (2 casillas)" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label maxWidth="700" text="🛶 4 Fragatas (1 casilla)" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label text="Tableros">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font></Label>
+            <Label maxWidth="700" text="🛡 Tablero del Jugador: aquí ves tus barcos y los disparos enemigos." textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label maxWidth="700" text="💥 Tablero del Oponentel: donde disparas para encontrar y hundir la flota enemiga." textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label text="Disparos posibles">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font></Label>
+            <Label maxWidth="700" text="❌ Agua: fallaste, el turno pasa al enemigo." textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label maxWidth="700" text="💢 Tocado: acertaste una parte del barco, ¡vuelves a disparar!" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label maxWidth="700" text="☠ Hundido: destruiste todo el barco, ¡sigue disparando!" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" maxWidth="700" text="🏁 ¡Gana quien hunda toda la flota enemiga primero!" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Button mnemonicParsing="false" text="Volver al inicio" onAction="#goToWelcome">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="20" left="30" right="30" top="10" />
+         </padding>
+      </VBox>
+   </center>
+</BorderPane>

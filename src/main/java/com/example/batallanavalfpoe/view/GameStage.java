@@ -29,10 +29,7 @@ public class GameStage {
         stage.setTitle("Main Stage");
         stage.setScene(scene);
         stage.show();
-    }
 
-
-    public void show() {
-        stage.show();
+        stage.centerOnScreen();
     }
 }

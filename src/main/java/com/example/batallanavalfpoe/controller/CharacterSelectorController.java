@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -24,6 +26,12 @@ public class CharacterSelectorController {
     @FXML
     private Button previousButton, nextButton;
 
+    @FXML
+    private TextField textField;
+
+    @FXML
+    private Label emptyNameLabel;
+
     private List<Image> images;
     private int currentIndex = 2;
 
@@ -39,6 +47,12 @@ public class CharacterSelectorController {
 
     @FXML
     public void initialize() {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.trim().isEmpty()) {
+                emptyNameLabel.setVisible(false); // mira si esta vacio para mostrar el mensaje de trin
+            }
+        });
+
         images = List.of(
                 new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeUno.jpg")),
                 new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeDos.jpg")),
@@ -46,7 +60,6 @@ public class CharacterSelectorController {
         );
         imageView.setImage(images.get(currentIndex));
     }
-
 
     @FXML
     private void nextImage() {
@@ -65,11 +78,9 @@ public class CharacterSelectorController {
             currentIndex--;
             imageView.setImage(images.get(currentIndex));
 
-
         }else {
             currentIndex = 2;
             imageView.setImage(images.get(currentIndex));
-
         }
     }
 
@@ -77,27 +88,27 @@ public class CharacterSelectorController {
     MUCHO CUIDADO CON ESTA IMPLEMENTACION HAY QUE TENER CUIDADO PQ HAY CIERTAS COSITAS QUE TODAVIA
     NO ENTIENDO
      */
+
     @FXML
     private void playButton(ActionEvent event) throws IOException {
+        String name = textField.getText().trim();
+
+        if (name.isEmpty()) {
+            emptyNameLabel.setText("Ingrese un nickname");
+            emptyNameLabel.setVisible(true);
+            return;
+        }
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/game-view.fxml"));
         Parent root = loader.load();
 
         GameController gameController = loader.getController();
         gameController.setCharacterImage(images.get(currentIndex));
+        gameController.setNameLabel(name);
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
     }
-
-
-    Image getImage() {
-        return images.get(currentIndex);
-    }
-
-    int getIndex() {return currentIndex;}
-
-
-
 
 }
