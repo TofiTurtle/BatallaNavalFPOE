@@ -1,76 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="711.0" xmlns="http://javafx.com/javafx/23.0.1 " xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
+<VBox alignment="CENTER" prefHeight="855.0" prefWidth="1219.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
    <children>
-      <HBox prefHeight="269.0" prefWidth="600.0">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <GridPane prefHeight="270.0" prefWidth="270.0">
-              <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-            </GridPane>
-            <GridPane prefHeight="270.0" prefWidth="270.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-            </GridPane>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" fx:id="img" >
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </ImageView>
+                  <Label prefHeight="32.0" prefWidth="84.0" fx:id="nameLabel">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
+               </children>
+               <HBox.margin>
+                  <Insets right="320.0" />
+               </HBox.margin>
+            </VBox>
+            <Label prefHeight="86.0" prefWidth="582.0" text="Posiciona tus flotas" textAlignment="CENTER">
+               <font>
+                  <Font size="47.0" />
+               </font>
+            </Label>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </HBox>
+
+      <HBox alignment="CENTER" prefHeight="470.0" prefWidth="900.0" spacing="60.0">
+         <children>
+            <StackPane prefHeight="470.0" prefWidth="200.0">
+               <VBox fx:id="fleetVBox" alignment="CENTER" prefHeight="490.0" prefWidth="261.0" spacing="5.0">
+                  <Label alignment="CENTER" prefHeight="30.0" prefWidth="214.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Flotas disponibles" />
+
+                  <Rectangle fx:id="carrier" arcHeight="10" arcWidth="10" fill="#6A5ACD" height="40.0" stroke="black" width="160.0" />
+
+                  <Rectangle fx:id="submarine1" arcHeight="10" arcWidth="10" fill="#20B2AA" height="40.0" stroke="black" width="120.0" />
+                  <Rectangle fx:id="submarine2" arcHeight="10" arcWidth="10" fill="#20B2AA" height="40.0" stroke="black" width="120.0" />
+
+                  <Rectangle fx:id="destroyer1" arcHeight="10" arcWidth="10" fill="#FFA500" height="40.0" stroke="black" width="80.0" />
+                  <Rectangle fx:id="destroyer2" arcHeight="10" arcWidth="10" fill="#FFA500" height="40.0" stroke="black" width="80.0" />
+                  <Rectangle fx:id="destroyer3" arcHeight="10" arcWidth="10" fill="#FFA500" height="40.0" stroke="black" width="80.0" />
+
+                  <Rectangle fx:id="frigate1" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
+                  <Rectangle fx:id="frigate2" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
+                  <Rectangle fx:id="frigate3" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
+                  <Rectangle fx:id="frigate4" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
+               </VBox>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </StackPane>
+
+            <VBox alignment="TOP_CENTER" spacing="10">
+               <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Jugador" />
+               <StackPane fx:id="playerGridContainer" prefHeight="400.0" prefWidth="400.0" />
+            </VBox>
+
+            <VBox alignment="TOP_CENTER" spacing="10">
+               <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Oponente" />
+               <StackPane fx:id="mainGridContainer" prefHeight="400.0" prefWidth="400.0" />
+            </VBox>
          </children>
       </HBox>
-      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" fx:id="img">
+
+      <HBox alignment="CENTER" prefHeight="100.0" spacing="50.0">
+         <children>
+            <Button fx:id="leaveButton" onAction="#goToWelcomeStage" text="Abandonar juego">
+               <font>
+                  <Font size="31.0" />
+               </font>
+            </Button>
+            <Button fx:id="playButton" onAction="#activateOpponentGrid" text="Jugar">
+               <font>
+                  <Font size="31.0" />
+               </font>
+            </Button>
+         </children>
          <VBox.margin>
-            <Insets top="80.0" />
+            <Insets top="20.0" />
          </VBox.margin>
-      </ImageView>
+      </HBox>
    </children>
 </VBox>
