@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.view.GameStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -99,16 +100,15 @@ public class CharacterSelectorController {
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/game-view.fxml"));
-        Parent root = loader.load();
-
-        GameController gameController = loader.getController();
-        gameController.setCharacterImage(images.get(currentIndex));
-        gameController.setNameLabel(name);
+        //para mejorar logica y usar gamestage, se instancia este
+        //y se pasa como parametros imagen actual y el nombre actual.
+        GameStage gameStage = new GameStage(images.get(currentIndex),name);
+        gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close(); //si no se cierra esto aca, la vaina de los pjs queda abierta indefinidamente
+
     }
+
 
 }
