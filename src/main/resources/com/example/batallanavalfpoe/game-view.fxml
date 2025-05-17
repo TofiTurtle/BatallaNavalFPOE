@@ -10,18 +10,18 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="855.0" prefWidth="1219.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
+<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <VBox alignment="CENTER" prefHeight="186.0" prefWidth="266.0">
                <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" fx:id="img" >
+                  <ImageView fx:id="img" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ImageView>
-                  <Label prefHeight="32.0" prefWidth="84.0" fx:id="nameLabel">
+                  <Label fx:id="nameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="36.0" prefWidth="274.0" textAlignment="CENTER">
                      <font>
                         <Font size="25.0" />
                      </font>
@@ -42,12 +42,11 @@
          </opaqueInsets>
       </HBox>
 
-      <HBox alignment="CENTER" prefHeight="470.0" prefWidth="900.0" spacing="60.0">
+      <HBox fx:id="gridsHBox" alignment="CENTER" prefHeight="470.0" prefWidth="900.0" spacing="60.0">
          <children>
             <StackPane prefHeight="470.0" prefWidth="200.0">
                <VBox fx:id="fleetVBox" alignment="CENTER" prefHeight="490.0" prefWidth="261.0" spacing="5.0">
                   <Label alignment="CENTER" prefHeight="30.0" prefWidth="214.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Flotas disponibles" />
-
                   <Rectangle fx:id="carrier" arcHeight="10" arcWidth="10" fill="#6A5ACD" height="40.0" stroke="black" width="160.0" />
 
                   <Rectangle fx:id="submarine1" arcHeight="10" arcWidth="10" fill="#20B2AA" height="40.0" stroke="black" width="120.0" />
@@ -62,24 +61,21 @@
                   <Rectangle fx:id="frigate3" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
                   <Rectangle fx:id="frigate4" arcHeight="10" arcWidth="10" fill="#DC143C" height="40.0" stroke="black" width="40.0" />
                </VBox>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
             </StackPane>
 
-            <VBox alignment="TOP_CENTER" spacing="10">
+            <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Jugador" />
-               <StackPane fx:id="playerGridContainer" prefHeight="400.0" prefWidth="400.0" />
+               <StackPane fx:id="playerGridContainer" prefHeight="400.0" />
             </VBox>
 
-            <VBox alignment="TOP_CENTER" spacing="10">
+            <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Oponente" />
-               <StackPane fx:id="mainGridContainer" prefHeight="400.0" prefWidth="400.0" />
+               <StackPane fx:id="mainGridContainer" prefHeight="400.0" />
             </VBox>
          </children>
       </HBox>
 
-      <HBox alignment="CENTER" prefHeight="100.0" spacing="50.0">
+      <HBox fx:id="buttonsHBox" alignment="CENTER" prefHeight="100.0" spacing="50.0">
          <children>
             <Button fx:id="leaveButton" onAction="#goToWelcomeStage" text="Abandonar juego">
                <font>

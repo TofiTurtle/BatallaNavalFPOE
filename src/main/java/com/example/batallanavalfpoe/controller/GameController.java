@@ -1,10 +1,12 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameBoard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -51,11 +53,14 @@ public class GameController {
 
     @FXML
     private Button playButton;
-    //AQUI CREO UNA LISTA DE BOOL
-    private boolean[][] playerBoard = new boolean[10][10]; // Simulador de tablero
 
-    //NECESITO QUE INTENTENTEN ARREGLAR COMO SE MUEVE EL BARCO DEBIDO A QUE CON BOOLEANOS NO FUNCIONA BIEN
-    private boolean isVertical = false; // false = horizontal, true = vertical
+    @FXML
+    private HBox buttonsHBox;
+
+    //AQUI CREO UNA LISTA DE BOOL
+    private GameBoard playerBoard = new GameBoard(10, 10);
+
+    private String shipDirection = "RIGHT"; // Dirección por defecto
 
     private Rectangle selectedShip = null;
     private int selectedShipSize = 0;
@@ -74,6 +79,7 @@ public class GameController {
     public void setNameLabel(String text) {
         nameLabel.setText(text);
     }
+
     @FXML
     private void initialize(){
         playerGrid = new GridPane();
@@ -137,54 +143,42 @@ public class GameController {
                 }
             }
 
-            /*
-            ESTE EVENTO DE TECLADO LLAMA A LA FUNCION SET ROTATE DEPENDIENDO SI SE USAN LAS FLECHAS DE ARRIBA ABAJO O DERECHA A IZQUIERDA
-            ADEMAS SE PONE EL BOOLEANO RESPECTIVAMENTE PERO ESTE BOOLENAO AFECTA PRACTICAMENTE A TODOS LOS BLOQUES DEPUES DE GIRAR
-            ENTONCES SI PUEDEN AGREGAR UN FUNCIO EXTRA PARA ROTAR DEPENDIENDO DE EL ANGULO SE LOS AGRADECERIA
-                         */
             playerGridContainer.setOnKeyPressed(event -> {
                 if (selectedShip == null) return;
 
-                KeyCode code = event.getCode();
-                if ((code == KeyCode.UP || code == KeyCode.DOWN) && !isVertical) {
-                    isVertical = true;
-                    selectedShip.setRotate(90);      // gira el rectángulo 90º
-                }
-                else if ((code == KeyCode.LEFT || code == KeyCode.RIGHT) && isVertical) {
-                    isVertical = false;
-                    selectedShip.setRotate(0);       // vuelve a horizontal
+                switch (event.getCode()) {
+                    case UP -> shipDirection = "UP";
+                    case DOWN -> shipDirection = "DOWN";
+                    case LEFT -> shipDirection = "LEFT";
+                    case RIGHT -> shipDirection = "RIGHT";
                 }
             });
 
-            Platform.runLater(() -> {
-                playerGridContainer.requestFocus();
-            });
+            // Asegura que el contenedor reciba el foco de teclado
+            Platform.runLater(() -> playerGridContainer.requestFocus());
+            playerGridContainer.setFocusTraversable(true);
         }
-
-        playerGridContainer.setFocusTraversable(true);
-        playerGridContainer.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case UP, DOWN -> isVertical = true;
-                case LEFT, RIGHT -> isVertical = false;
-            }
-        });
-
-        Platform.runLater(() -> playerGridContainer.requestFocus());
     }
 
     private void selectShip(Rectangle ship) {
-        // borrar selección previa
+        // Restaurar estilo visual del barco anterior
         if (selectedShip != null) {
             selectedShip.setStroke(null);
-            selectedShip.setRotate(0);  // resetea rotación si cambiabas seleccion
+            selectedShip.setStrokeWidth(0);
         }
 
         selectedShip = ship;
         selectedShipSize = shipSizeMap.get(ship);
+
         ship.setStroke(Color.YELLOW);
         ship.setStrokeWidth(3);
 
-        // pon al pane en foco justo al seleccionar, para que capture el keyEvent
+        // Reiniciar dirección por defecto y eliminar transformación visual
+        shipDirection = "RIGHT";
+        ship.setRotate(0); // sin rotación visual
+        ship.setScaleX(1); // sin reflejo horizontal
+        ship.setScaleY(1); // sin reflejo vertical
+
         playerGridContainer.requestFocus();
     }
 
@@ -234,73 +228,106 @@ public class GameController {
                 node.setDisable(false);  // Habilitar las celdas del oponente para permitir clics
             }
         }
+        
 
-        // verificar si todas las flotas han sido colocadas, si ningun nodo es una instancia de rectangle
-        boolean emptyFleetVBox = fleetVBox.getChildren().stream()
-                .noneMatch(n -> n instanceof Rectangle);
+        //quitar boton jugar cuando se presiona el trin
 
-        // si todas las flotas han sido colocadas, habilitar el boton de jugar
-        playButton.setDisable(!emptyFleetVBox);
+        buttonsHBox.getChildren().remove(playButton);
+        buttonsHBox.setAlignment(Pos.CENTER);
     }
 
     // Colocar un barco sin modificar el tamaño del GridPane
     private void handleGridClick(MouseEvent event, int row, int col) {
-        if (selectedShip == null) return; // Verifica que haya un barco seleccionado
+        if (selectedShip == null) return;
 
-        // Verifica si el barco cabe en la dirección seleccionada
-        if (isVertical) {
-            if (row + selectedShipSize > 10) return;
-            for (int i = 0; i < selectedShipSize; i++) {
-                if (playerBoard[row + i][col]) return; // Verifica superposición
-            }
-        } else {
-            if (col + selectedShipSize > 10) return;
-            for (int i = 0; i < selectedShipSize; i++) {
-                if (playerBoard[row][col + i]) return; // Verifica superposición
-            }
+        // Variables para posición inicial real (la parte "más arriba" o "más izquierda" del barco)
+        int startRow = row;
+        int startCol = col;
+
+        switch (shipDirection) {
+            case "UP" -> startRow = row - (selectedShipSize - 1);
+            case "LEFT" -> startCol = col - (selectedShipSize - 1);
+            case "DOWN" -> startRow = row;
+            case "RIGHT" -> startCol = col;
         }
-        /*
-        ESTO FUE LO QUE AGRUEGUE, BASICAMENTE RECORRE EL BARCO DE MANERA HORIZONTAL O VERTICAL DEPENDIENDO DEL BOOL
-        Y MIRA EL ARREGLO DE PLAYERBOARD A VER SI ESAS CASILLAS NO ESTAN OCUPADAS
-         */
+
+        // Validar que la posición inicial esté dentro del tablero
+        if (!playerBoard.isWithinBounds(startRow, startCol)) {
+            return;
+        }
+
+        // Variables para el desplazamiento de acuerdo a la dirección
+        int dRow = 0, dCol = 0;
+        switch (shipDirection) {
+            case "UP" -> dRow = 1;
+            case "DOWN" -> dRow = 1;
+            case "LEFT" -> dCol = 1;
+            case "RIGHT" -> dCol = 1;
+        }
+
+        // Validar que las casillas estén dentro y libres
         for (int i = 0; i < selectedShipSize; i++) {
-            if (isVertical) playerBoard[row + i][col] = true;
-            else playerBoard[row][col + i] = true;
+            int r = startRow + dRow * i;
+            int c = startCol + dCol * i;
+
+            if (!playerBoard.isWithinBounds(r, c) || playerBoard.isOccupied(r, c)) {
+                return;
+            }
         }
 
-        // Lógica original para agregar el barco visualmente
-        double width = isVertical ? 40 : selectedShipSize * 40;
-        double height = isVertical ? selectedShipSize * 40 : 40;
+        // Marcar las casillas como ocupadas
+        for (int i = 0; i < selectedShipSize; i++) {
+            int r = startRow + dRow * i;
+            int c = startCol + dCol * i;
+            playerBoard.setOccupied(r, c);
+        }
+
+        // Tamaño del rectángulo a dibujar
+        double width = 40, height = 40;
+        if (shipDirection.equals("UP") || shipDirection.equals("DOWN")) {
+            height = selectedShipSize * 40;
+        } else {
+            width = selectedShipSize * 40;
+        }
 
         Rectangle shipRectangle = new Rectangle(width, height);
         shipRectangle.setFill(shipImageMap.get(selectedShip));
 
-        playerGrid.add(shipRectangle, col, row);
+        // Ajustar reflejo visual según dirección original (no cambió)
+        switch (shipDirection) {
+            case "LEFT" -> shipRectangle.setScaleX(-1);
+            case "DOWN" -> shipRectangle.setScaleY(-1);
+        }
 
-        if (isVertical) {
+        // Añadir el barco en la posición inicial calculada
+        playerGrid.add(shipRectangle, startCol, startRow);
+
+        if (shipDirection.equals("UP") || shipDirection.equals("DOWN")) {
             GridPane.setRowSpan(shipRectangle, selectedShipSize);
         } else {
             GridPane.setColumnSpan(shipRectangle, selectedShipSize);
         }
 
-        // Eliminar el barco del VBox de flotas
+        // Quitar barco de la flota
         fleetVBox.getChildren().remove(selectedShip);
         shipSizeMap.remove(selectedShip);
         selectedShip = null;
-    }
 
-    // obtener nodo de una celda especifica
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
-            Integer columnIndex = GridPane.getColumnIndex(node);
-            Integer rowIndex = GridPane.getRowIndex(node);
+        // Actualizar estado botón jugar
+        boolean emptyFleetVBox = fleetVBox.getChildren().stream()
+                .noneMatch(n -> n instanceof Rectangle);
 
-            // Verifica si las celdas tienen el índice correcto
-            if (columnIndex != null && columnIndex == col && rowIndex != null && rowIndex == row) {
-                return node;
+        playButton.setDisable(!emptyFleetVBox);
+
+        // Si no quedan más barcos (solo puede quedar el label)
+        boolean onlyLabelLeft = fleetVBox.getChildren().stream().allMatch(node -> !(node instanceof Rectangle));
+        if (onlyLabelLeft) {
+            Node stackPane = fleetVBox.getParent();
+            if (stackPane != null && stackPane.getParent() instanceof HBox gridsHBox) {
+                gridsHBox.getChildren().remove(stackPane);
+                gridsHBox.setAlignment(Pos.CENTER);
             }
         }
-        return null;
     }
 
     // Metodo para regresar al WelcomeStage
