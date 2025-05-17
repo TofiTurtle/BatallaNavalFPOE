@@ -228,7 +228,6 @@ public class GameController {
                 node.setDisable(false);  // Habilitar las celdas del oponente para permitir clics
             }
         }
-        
 
         //quitar boton jugar cuando se presiona el trin
 
