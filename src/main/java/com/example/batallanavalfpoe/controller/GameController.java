@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameBoard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -57,7 +58,7 @@ public class GameController {
     private HBox buttonsHBox;
 
     //AQUI CREO UNA LISTA DE BOOL
-    private boolean[][] playerBoard = new boolean[10][10]; // Simulador de tablero
+    private GameBoard playerBoard = new GameBoard(10, 10);
 
     private String shipDirection = "RIGHT"; // Dirección por defecto
 
@@ -250,16 +251,16 @@ public class GameController {
         }
 
         // Validar que la posición inicial esté dentro del tablero
-        if (startRow < 0 || startCol < 0 || startRow >= 10 || startCol >= 10) {
+        if (!playerBoard.isWithinBounds(startRow, startCol)) {
             return;
         }
 
         // Variables para el desplazamiento de acuerdo a la dirección
         int dRow = 0, dCol = 0;
         switch (shipDirection) {
-            case "UP" -> dRow = 1;    // porque startRow está arriba, avanzamos hacia abajo
+            case "UP" -> dRow = 1;
             case "DOWN" -> dRow = 1;
-            case "LEFT" -> dCol = 1;  // startCol esta más a la izquierda, avanzamos hacia la derecha
+            case "LEFT" -> dCol = 1;
             case "RIGHT" -> dCol = 1;
         }
 
@@ -268,11 +269,7 @@ public class GameController {
             int r = startRow + dRow * i;
             int c = startCol + dCol * i;
 
-            if (r < 0 || r >= 10 || c < 0 || c >= 10) {
-                return;
-            }
-
-            if (playerBoard[r][c]) {
+            if (!playerBoard.isWithinBounds(r, c) || playerBoard.isOccupied(r, c)) {
                 return;
             }
         }
@@ -281,7 +278,7 @@ public class GameController {
         for (int i = 0; i < selectedShipSize; i++) {
             int r = startRow + dRow * i;
             int c = startCol + dCol * i;
-            playerBoard[r][c] = true;
+            playerBoard.setOccupied(r, c);
         }
 
         // Tamaño del rectángulo a dibujar
