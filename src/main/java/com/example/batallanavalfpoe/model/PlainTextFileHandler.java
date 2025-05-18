@@ -4,7 +4,7 @@ import java.io.*;
 
 public class PlainTextFileHandler implements IPlainTextFileHandler {
     @Override
-    public void writetoFile(String filePath, String content) {
+    public void writeToFile(String filePath, String content) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(content);
             writer.flush();
