@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,10 +15,10 @@ public class RulesController {
 
     @FXML
     private void goToWelcome(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/welcome-view.fxml"));
-        Parent root = loader.load();
+        WelcomeStage welcomeStage = new WelcomeStage();
+        welcomeStage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
     }
 }

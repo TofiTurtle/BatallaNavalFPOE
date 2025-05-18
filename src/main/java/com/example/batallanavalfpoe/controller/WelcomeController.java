@@ -1,5 +1,7 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.view.CharacterSelectorStage;
+import com.example.batallanavalfpoe.view.RulesStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,21 +14,36 @@ import java.io.IOException;
 
 public class WelcomeController {
 
+
+    //juan: Esta clase tendra 3 buttons, es una bobada pero por orden voy a modificar el
+    /*nombre de un boton, y tambien para seguir mejor el MVc voy a cmabiar como se cargan
+    los archivos.
+    * */
+
+    //Button "Jugar"
     @FXML
-    private void goToGame(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/characterSelector-view.fxml"));
-        Parent root = loader.load();
+    private void goToCharacterSelector(ActionEvent event) throws IOException {
+        CharacterSelectorStage characterstage = new CharacterSelectorStage();
+        characterstage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
     }
 
+
+    //Button "Continuar"
+    /*
+    * Aca se hace a lo ultimo la implementacion de los archivos planos y serializables
+    */
+
+
+    //Button "Reglas"
     @FXML
     private void goToRules(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/rules-view.fxml"));
-        Parent root = loader.load();
+        RulesStage rulesstage = new RulesStage();
+        rulesstage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
     }
 }

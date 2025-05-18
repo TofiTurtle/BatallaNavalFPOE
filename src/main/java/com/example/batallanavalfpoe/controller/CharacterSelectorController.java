@@ -104,8 +104,6 @@ public class CharacterSelectorController {
         GameStage gameStage = new GameStage(images.get(currentIndex), name);
         gameStage.show();
 
-
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close(); //ojo vivo a esto pq es importante para que se cierre
     }

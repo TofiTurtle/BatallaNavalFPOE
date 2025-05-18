@@ -1,6 +1,7 @@
 package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -332,10 +333,10 @@ public class GameController {
     // Metodo para regresar al WelcomeStage
     @FXML
     private void goToWelcomeStage(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/welcome-view.fxml"));
-        Parent root = loader.load();
+        WelcomeStage gotoWstage = new WelcomeStage();
+        gotoWstage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
     }
 }
