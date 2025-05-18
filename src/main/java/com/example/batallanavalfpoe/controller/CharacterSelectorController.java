@@ -1,6 +1,7 @@
 package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.view.GameStage;
+import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,12 +38,12 @@ public class CharacterSelectorController {
     private int currentIndex = 2;
 
     @FXML
-        private void welcomeStage (ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/welcome-view.fxml"));
-        Parent root = loader.load();
+    private void welcomeStage (ActionEvent event) throws IOException {
+        WelcomeStage welcomeStage = new WelcomeStage();
+        welcomeStage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
 
     }
 
