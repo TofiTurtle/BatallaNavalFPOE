@@ -3,6 +3,9 @@ package com.example.batallanavalfpoe.model;
 public class GameBoard {
     private boolean[][] board;
 
+
+
+    //functions of GameBoard class :3*****************
     public GameBoard(int rows, int cols) {
         this.board = new boolean[rows][cols];
     }
