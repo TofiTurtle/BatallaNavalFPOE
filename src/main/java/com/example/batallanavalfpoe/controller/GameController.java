@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -52,6 +53,8 @@ public class GameController {
     @FXML
     private Button opponentButton;
 
+    private OpponentStage opponentStage;
+
     @FXML
     private ImageView img;
 
@@ -79,6 +82,8 @@ public class GameController {
 
     @FXML
     private void initialize() {
+        opponentStage = new OpponentStage();
+
         playerGrid = new GridPane();
         playerGridContainer.getChildren().add(playerGrid);
 
@@ -92,11 +97,7 @@ public class GameController {
         deactivateGrid(opponentGrid);
         opponentButton.setDisable(true);
 
-        if (!fleetVBox.getChildren().isEmpty()){ // si el trin esta vacio entonces tran
-            playButton.setDisable(true);
-        } else {
-            playButton.setDisable(false);
-        }
+        copyOpponentShips();
 
         if (pendingCharacterImage != null) {
             img.setImage(pendingCharacterImage);
@@ -120,11 +121,11 @@ public class GameController {
                 shipSizeMap.put(rect, size);
 
                 ImagePattern pattern = switch (size) {
-                    case 1 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/fragata.png"))));
-                    case 2 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destructor.png"))));
-                    case 3 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarino.png"))));
-                    case 4 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/portaviones.png"))));
-                    default -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/default.png"))));
+                    case 1 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/frigate_right.png"))));
+                    case 2 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destroyer_right.png"))));
+                    case 3 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarine_right.png"))));
+                    case 4 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/carrier_right.png"))));
+                    default -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/default_right.png"))));
                 };
 
                 rect.setFill(pattern);
@@ -150,13 +151,13 @@ public class GameController {
             playerGridContainer.setFocusTraversable(true);
         });
 
-        playButton.setDisable(!fleetVBox.getChildren().stream().anyMatch(n -> n instanceof Rectangle));
+        playButton.setDisable(true);
     }
 
     private void selectShip(Rectangle ship) {
         if (selectedShip != null) {
-            selectedShip.setStroke(null);
-            selectedShip.setStrokeWidth(0);
+            selectedShip.setStroke(Color.BLACK);
+            selectedShip.setStrokeWidth(1);
         }
 
         selectedShip = ship;
@@ -209,12 +210,30 @@ public class GameController {
         }
 
         Rectangle shipRectangle = new Rectangle(width, height);
-        shipRectangle.setFill(shipImageMap.get(selectedShip));
 
-        switch (shipDirection) {
-            case "LEFT" -> shipRectangle.setScaleX(-1);
-            case "DOWN" -> shipRectangle.setScaleY(-1);
-        }
+        // para rotar la imagen junto con el recangulo se recibe el tamaño del barco y se le asigna un nombre dependiendo
+        String imageName = switch (selectedShipSize) {
+            case 1 -> "frigate";
+            case 2 -> "destroyer";
+            case 3 -> "submarine";
+            case 4 -> "carrier";
+            default -> "default";
+        };
+
+        /*aca recibe la direccion que se desea rotar, y dependiendo del tamaño del barco (imagename)
+        se le asigna la imagen en esa direccion*/
+        
+        String path = switch (shipDirection) {
+            case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+            case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+            case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+            case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+            default -> "/com/example/batallanavalfpoe/images/default_right.png";
+        };
+
+        Image directionImage = new Image(getClass().getResourceAsStream(path));
+        ImagePattern pattern = new ImagePattern(directionImage);
+        shipRectangle.setFill(pattern);
 
         playerGrid.add(shipRectangle, startCol, startRow);
 
@@ -248,6 +267,53 @@ public class GameController {
         playerBoard.deactivateGrid(grid);
     }
 
+    private void copyOpponentShips() {
+
+        // 2. Obtenemos los barcos guardados del OpponentController
+        List<OpponentController.PlacedShip> placedShips = OpponentController.getSavedPlacedShips();
+        if (placedShips == null) return; // Si no hay barcos, salimos
+
+        // 3. Tamaño de cada celda
+        double cellSize = 40;
+
+        // 4. Recorremos cada barco colocado
+        for (OpponentController.PlacedShip ps : placedShips) {
+            double width = cellSize;
+            double height = cellSize;
+
+            // 5. Determinamos orientación (vertical u horizontal)
+            boolean vertical = ps.placement.direction.equals("UP") || ps.placement.direction.equals("DOWN");
+
+            if (vertical) {
+                height = ps.ship.getSize() * cellSize; // Altura ajustada para barcos verticales
+            } else {
+                width = ps.ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
+            }
+
+            // 6. Creamos un rectángulo que representa el barco
+            Rectangle rect = new Rectangle(width, height);
+            rect.setFill(Color.TRANSPARENT); //usamos este color para que trin
+            rect.setStroke(Color.TRANSPARENT);
+
+            // 9. Ajustamos orientación para LEFT y DOWN (espejo)
+            switch (ps.placement.direction) {
+                case "LEFT" -> rect.setScaleX(-1);
+                case "DOWN" -> rect.setScaleY(-1);
+            }
+
+            // 10. Agregamos el rectángulo en el GridPane (en la posición correcta)
+            opponentGrid.add(rect, ps.placement.col, ps.placement.row);
+
+            // 11. Ajustamos el tamaño del barco en filas o columnas según orientación
+            if (vertical) {
+                GridPane.setRowSpan(rect, ps.ship.getSize());
+            } else {
+                GridPane.setColumnSpan(rect, ps.ship.getSize());
+            }
+        }
+    }
+
+
     @FXML
     private void handlePlayButton() {
         for (int row = 0; row < 10; row++) {
@@ -277,6 +343,6 @@ public class GameController {
 
     @FXML
     private void showOpponentBoard(ActionEvent event) throws IOException {
-        new OpponentStage().show();
+        opponentStage.show();
     }
 }

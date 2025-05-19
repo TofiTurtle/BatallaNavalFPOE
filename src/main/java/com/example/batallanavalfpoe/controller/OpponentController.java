@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.model.Ship;
 
 import java.net.URL;
 import java.util.*;
@@ -27,30 +28,20 @@ public class OpponentController implements Initializable {
         return opponentBoard;
     }
 
-    private static class Ship {
-        int size;
-        String name;
-
-        Ship(int size, String name) { // recibe el nombre del barco y el tamaño
-            this.size = size;
-            this.name = name;
-        }
-    }
-
-    private static class ShipPlacement {
+    public static class ShipPlacement {
+        public String direction;
         int row, col;
-        String direction;
 
-        ShipPlacement(int row, int col, String direction) { //  recibe la fila columna y posicion del barco
+        ShipPlacement(int row, int col, String direction) {
             this.row = row;
             this.col = col;
             this.direction = direction;
         }
     }
 
-    private static class PlacedShip {
-        ShipPlacement placement; // placement indica donde y en que direccion esta colocado el barco
-        Ship ship; // indica el tamaño del barco y el nombre, esdecir esta clase une ship y shipplacement
+    static class PlacedShip {
+        ShipPlacement placement;
+        Ship ship;
 
         PlacedShip(ShipPlacement placement, Ship ship) {
             this.placement = placement;
@@ -58,7 +49,6 @@ public class OpponentController implements Initializable {
         }
     }
 
-    // Lista expandida con todas las flotas a colocar
     private final List<Ship> fleet = new ArrayList<>();
 
     @Override
@@ -78,13 +68,11 @@ public class OpponentController implements Initializable {
         }
 
         if (savedPlacedShips != null) {
-            // Ya fueron colocados antes
             for (PlacedShip ps : savedPlacedShips) {
-                opponentBoard.placeShip(ps.placement.row, ps.placement.col, ps.ship.size, ps.placement.direction);
+                opponentBoard.placeShip(ps.placement.row, ps.placement.col, ps.ship.getSize(), ps.placement.direction);
             }
             renderPlacedShips(savedPlacedShips);
         } else {
-            // Primera vez → colocamos y guardamos
             savedPlacedShips = placeAllShipsRandomly();
         }
     }
@@ -95,7 +83,6 @@ public class OpponentController implements Initializable {
         }
     }
 
-    // Coloca todos los barcos de forma aleatoria
     private List<PlacedShip> placeAllShipsRandomly() {
         List<PlacedShip> placedShips = new ArrayList<>();
         Random random = new Random();
@@ -109,8 +96,8 @@ public class OpponentController implements Initializable {
                 String[] directions = {"UP", "DOWN", "LEFT", "RIGHT"};
                 String direction = directions[random.nextInt(directions.length)];
 
-                if (opponentBoard.canPlaceShip(row, col, ship.size, direction)) {
-                    opponentBoard.placeShip(row, col, ship.size, direction);
+                if (opponentBoard.canPlaceShip(row, col, ship.getSize(), direction)) {
+                    opponentBoard.placeShip(row, col, ship.getSize(), direction);
                     placedShips.add(new PlacedShip(new ShipPlacement(row, col, direction), ship));
                     placed = true;
                 }
@@ -121,7 +108,10 @@ public class OpponentController implements Initializable {
         return placedShips;
     }
 
-    // Renderiza los barcos colocados con las imágenes y orientación adecuada
+    public static List<PlacedShip> getSavedPlacedShips() {
+        return savedPlacedShips;
+    }
+
     private void renderPlacedShips(List<PlacedShip> placedShips) {
         double cellSize = 40;
 
@@ -132,39 +122,44 @@ public class OpponentController implements Initializable {
             boolean vertical = ps.placement.direction.equals("UP") || ps.placement.direction.equals("DOWN");
 
             if (vertical) {
-                height = ps.ship.size * cellSize; // pone los barquitos
+                height = ps.ship.getSize() * cellSize;
             } else {
-                width = ps.ship.size * cellSize;
+                width = ps.ship.getSize() * cellSize;
             }
 
-            Rectangle rect = new Rectangle(width, height); // en este proyecto entendi la necesidad de la mailicia indigena
+            Rectangle rect = new Rectangle(width, height);
 
-            ImagePattern pattern = switch (ps.ship.size) {
-                case 1 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/fragata.png")));
-                case 2 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destructor.png")));
-                case 3 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarino.png")));
-                case 4 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/portaviones.png")));
-                default -> null;
+            // para rotar la imagen junto con el recangulo
+            String imageName = switch (ps.ship.getSize()) {
+                case 1 -> "frigate";
+                case 2 -> "destroyer";
+                case 3 -> "submarine";
+                case 4 -> "carrier";
+                default -> "default";
             };
 
-            if (pattern != null) {
-                rect.setFill(pattern);
-            } else {
-                rect.setFill(Color.GRAY);
-            }
+            String path = switch (ps.placement.direction) {
+                case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                default -> "/com/example/batallanavalfpoe/images/default_right.png";
+            };
 
-            // Corrige orientación para LEFT y DOWN (voltea la imagen)
-            switch (ps.placement.direction) {
-                case "LEFT" -> rect.setScaleX(-1);
-                case "DOWN" -> rect.setScaleY(-1);
+            try {
+                Image image = new Image(getClass().getResourceAsStream(path));
+                ImagePattern pattern = new ImagePattern(image);
+                rect.setFill(pattern);
+            } catch (Exception e) {
+                rect.setFill(Color.GRAY);
             }
 
             opponentGrid.add(rect, ps.placement.col, ps.placement.row);
 
             if (vertical) {
-                GridPane.setRowSpan(rect, ps.ship.size);
+                GridPane.setRowSpan(rect, ps.ship.getSize());
             } else {
-                GridPane.setColumnSpan(rect, ps.ship.size);
+                GridPane.setColumnSpan(rect, ps.ship.getSize());
             }
         }
     }
