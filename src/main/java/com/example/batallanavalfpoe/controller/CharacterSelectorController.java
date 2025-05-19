@@ -42,9 +42,8 @@ public class CharacterSelectorController {
     /*creo este arreglo pq necesito tener como tal los STRING de los path de imagenes, y ps
     la lista de abajo la unica manera en la que m lo devuelve es en Image. tonces no sirve
     * */
-    private String PathListImages[] = { "/com/example/batallanavalfpoe/images/personajeUno.jpg",
-                                        "/com/example/batallanavalfpoe/images/personajeDos.jpg",
-                                        "/com/example/batallanavalfpoe/images/personajeTres.jpg"
+    private String PathListImages[] = { "/com/example/batallanavalfpoe/images/character1.PNG", "/com/example/batallanavalfpoe/images/character2.PNG", "/com/example/batallanavalfpoe/images/character3.PNG",
+            "/com/example/batallanavalfpoe/images/character4.PNG","/com/example/batallanavalfpoe/images/character5.PNG","/com/example/batallanavalfpoe/images/character6.PNG", "/com/example/batallanavalfpoe/images/character7.PNG"
                                       };
     //Por supuesto definmos el texthanlder
     private PlainTextFileHandler plainTextFileHandler;
@@ -69,9 +68,14 @@ public class CharacterSelectorController {
         });
 
         images = List.of(
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeUno.jpg")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeDos.jpg")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeTres.jpg"))
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character1.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character2.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character3.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character4.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character5.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character6.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character7.PNG"))
+
         );
         imageView.setImage(images.get(currentIndex));
 
@@ -98,7 +102,7 @@ public class CharacterSelectorController {
             imageView.setImage(images.get(currentIndex));
 
         }else {
-            currentIndex = 2;
+            currentIndex = images.size() - 1;
             imageView.setImage(images.get(currentIndex));
         }
     }
