@@ -9,7 +9,7 @@ public class WelcomeStage extends Stage {
     public WelcomeStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/welcome-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        setTitle("Batalla Naval");
+        setTitle("Batalla Naval - Bienvenida");
         setResizable(false);
         setScene(scene);
         show();

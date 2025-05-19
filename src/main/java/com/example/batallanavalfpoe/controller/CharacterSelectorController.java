@@ -1,5 +1,9 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.PlainTextFileHandler;
+import com.example.batallanavalfpoe.model.Player;
+import com.example.batallanavalfpoe.view.GameStage;
+import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,13 +39,24 @@ public class CharacterSelectorController {
     private List<Image> images;
     private int currentIndex = 2;
 
+    /*creo este arreglo pq necesito tener como tal los STRING de los path de imagenes, y ps
+    la lista de abajo la unica manera en la que m lo devuelve es en Image. tonces no sirve
+    * */
+    private String PathListImages[] = { "/com/example/batallanavalfpoe/images/personajeUno.jpg",
+                                        "/com/example/batallanavalfpoe/images/personajeDos.jpg",
+                                        "/com/example/batallanavalfpoe/images/personajeTres.jpg"
+                                      };
+    //Por supuesto definmos el texthanlder
+    private PlainTextFileHandler plainTextFileHandler;
+
+
     @FXML
-        private void welcomeStage (ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/welcome-view.fxml"));
-        Parent root = loader.load();
+    private void welcomeStage (ActionEvent event) throws IOException {
+        WelcomeStage welcomeStage = new WelcomeStage();
+        welcomeStage.show();
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close();
 
     }
 
@@ -59,6 +74,10 @@ public class CharacterSelectorController {
                 new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeTres.jpg"))
         );
         imageView.setImage(images.get(currentIndex));
+
+        //OJO ATENTO, tenemos que crear un objeto global de esta vainosa
+        plainTextFileHandler = new PlainTextFileHandler();
+        //trin tran
     }
 
     @FXML
@@ -91,24 +110,32 @@ public class CharacterSelectorController {
 
     @FXML
     private void playButton(ActionEvent event) throws IOException {
+        //este pedazo de logica es una tipo excepcion para que si no se ingresa nombre
+        //no deje iniciar la aplicacion cierto? see xd
         String name = textField.getText().trim();
-
         if (name.isEmpty()) {
             emptyNameLabel.setText("Ingrese un nickname");
             emptyNameLabel.setVisible(true);
             return;
         }
+        /*cuando se presione jugar en characterStage, se crea una instancia de Jugador
+        y ps se crea el content que se le pasa a el plainTexthANLDER
+        (de momento nombre e imagen) pq considero que el numero de flotas hundidas
+        y eso seria estado de partida actual y pues eso ya iria es en el serializable
+        igualmente luego lo añado si quieren :>
+        * */
+        Player player = new Player(name,PathListImages[currentIndex]);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/game-view.fxml"));
-        Parent root = loader.load();
+        String content = player.getPlayerName() + "," + player.getCharacterImagePath();
+        //se crea el archivo ese d texto con las vainas nombre y la imagen
+        plainTextFileHandler.writeToFile("player_data.csv", content);
 
-        GameController gameController = loader.getController();
-        gameController.setCharacterImage(images.get(currentIndex));
-        gameController.setNameLabel(name);
+        //se instancia geimstage y le pasamos por parametros la imaen y nombre
+        GameStage gameStage = new GameStage(images.get(currentIndex), name);
+        gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+        stage.close(); //ojo vivo a esto pq es importante para que se cierre
     }
 
 }

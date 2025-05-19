@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.OpponentController" alignment="CENTER" spacing="10" prefWidth="450" prefHeight="470">
+    <Label text="Tablero del Oponente" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+    <GridPane fx:id="opponentGrid" gridLinesVisible="true" prefWidth="400" prefHeight="400"/>
+</VBox>

@@ -10,7 +10,6 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         new WelcomeStage();
     }
-
     public static void main(String[] args) {
         launch(args);
     }
