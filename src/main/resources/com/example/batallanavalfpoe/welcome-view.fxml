@@ -9,7 +9,7 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.WelcomeController">
    <children>
-      <Label text="Label">
+      <Label text="BATALLA NAVAL">
          <VBox.margin>
             <Insets />
          </VBox.margin>
@@ -17,7 +17,7 @@
             <Font size="40.0" />
          </font>
       </Label>
-      <Button mnemonicParsing="false" onAction="#goToGame" prefHeight="30.0" prefWidth="88.0" text="Jugar">
+      <Button mnemonicParsing="false" onAction="#goToCharacterSelector" prefHeight="30.0" prefWidth="290.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="Jugar">
          <VBox.margin>
             <Insets bottom="10.0" top="50.0" />
          </VBox.margin>
@@ -28,7 +28,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="88.0" text="Continuar">
+      <Button mnemonicParsing="false" onAction="#handleClickContinue" prefHeight="30.0" prefWidth="290.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="Continuar">
          <VBox.margin>
             <Insets bottom="10.0" top="10.0" />
          </VBox.margin>
@@ -39,7 +39,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button mnemonicParsing="false" onAction="#goToRules" prefHeight="30.0" prefWidth="88.0" text="Reglas">
+      <Button mnemonicParsing="false" onAction="#goToRules" prefHeight="30.0" prefWidth="290.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="Reglas">
          <VBox.margin>
             <Insets bottom="20.0" top="10.0" />
          </VBox.margin>

@@ -24,7 +24,7 @@ public class GameStage extends Stage {
         gameController.setNameLabel(CurrentName);
 
 
-        setTitle("Batalla Naval");
+        setTitle("Batalla Naval - Partida");
         setResizable(false);
         setScene(scene);
         show();
