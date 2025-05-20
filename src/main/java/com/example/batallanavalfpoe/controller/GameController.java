@@ -199,12 +199,12 @@ public class GameController {
 
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
 
-        if (gridDisabled == false)
+        if (gridDisabled == false) //es decir, si el grid esta habilitao
         {
-            System.out.println("tripi tropi");
 
             int shottRow = row;
             int shotCol = col;
+
 
             //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
             if (!opponentBoard.isWithinBounds(shottRow, shotCol))
@@ -220,6 +220,15 @@ public class GameController {
 
             //lo mostramos en el opponent grid
             opponentGrid.add(shotRectangle, shotCol, shottRow);
+
+            //ahora hagamos la respectiva comprobacion de hit o miss
+
+            if (opponentBoard.isOccupied(shottRow, shotCol)) {
+                System.out.println("SHOT!!!! siuuu");
+            } else {
+                System.out.println("MISS!!!! awwww");
+            }
+
 
         }
 
@@ -324,6 +333,21 @@ public class GameController {
         // 2. Obtenemos los barcos guardados del OpponentController
         List<OpponentController.PlacedShip> placedShips = OpponentController.getSavedPlacedShips();
         if (placedShips == null) return; // Si no hay barcos, salimos
+
+        //***************************************************************************
+        /*OJO VIVISIMO: este fragmento de codigo es sumamente importante, pues aqui, en vista de
+        * que se tienen dos instancias del Oboard, pues con copiamos los datos para
+        * trabajar bajo las mismas vueltas*/
+        //Osea, esto es importante, estamos copiando los datos para usar en OponentBoard
+        for (OpponentController.PlacedShip ps : placedShips) {
+            opponentBoard.placeShip(
+                    ps.placement.row,
+                    ps.placement.col,
+                    ps.ship.getSize(),
+                    ps.placement.direction
+            );
+        }
+        //*************************************************************************
 
         // 3. Tamaño de cada celda
         double cellSize = 40;
