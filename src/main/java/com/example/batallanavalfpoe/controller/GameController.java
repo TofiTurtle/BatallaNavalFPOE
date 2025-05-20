@@ -216,8 +216,11 @@ public class GameController {
         }
 
     }
+    @FXML
+    private ImageView doctorimg;
 
     private void processMachineShot() {
+        doctorimg.setVisible(true);
         /*en escensia pausetransicion es una clase diseñada literal para "congelar" procesos
         * del programa, NO los congela, da una ilusion*/
         PauseTransition pause = new PauseTransition(Duration.millis(1500));
@@ -253,6 +256,7 @@ public class GameController {
             }while (machineHit);
             //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
             shootingTurn = true;
+            doctorimg.setVisible(false);
 
         });
         pause.play(); //esto se pone como "activador" del evento, si esta vaina, NO se ejecuta ni mrd
