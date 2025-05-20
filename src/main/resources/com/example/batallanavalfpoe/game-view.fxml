@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
+<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
@@ -32,6 +32,7 @@
                   <Insets right="320.0" />
                </HBox.margin>
             </VBox>
+            <Button mnemonicParsing="false" prefHeight="127.0" prefWidth="45.0" text="shut" />
             <Label prefHeight="86.0" prefWidth="582.0" text="Posiciona tus flotas" textAlignment="CENTER">
                <font>
                   <Font size="47.0" />

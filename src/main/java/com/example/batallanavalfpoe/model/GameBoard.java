@@ -74,6 +74,10 @@ public class GameBoard {
         return true;
     }
 
+
+
+
+
     // Coloca el barco en el tablero actualizando las celdas ocupadas
     public void placeShip(int row, int col, int size, String direction) {
         int dRow = 0, dCol = 0;

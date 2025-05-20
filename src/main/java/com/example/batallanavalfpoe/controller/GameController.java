@@ -37,7 +37,6 @@ public class GameController {
 
     @FXML
     private GridPane playerGrid;
-
     @FXML
     private GridPane opponentGrid;
 
@@ -52,13 +51,15 @@ public class GameController {
 
     @FXML
     private Button opponentButton;
-
     private OpponentStage opponentStage;
 
     @FXML
     private ImageView img;
 
     private GameBoard playerBoard = new GameBoard(10, 10);
+    /*creamos un opponenBoard*/
+    private GameBoard opponentBoard = new GameBoard(10, 10);
+
 
     private String shipDirection = "RIGHT"; // Dirección por defecto
 
@@ -68,6 +69,13 @@ public class GameController {
     private Map<Rectangle, ImagePattern> shipImageMap = new HashMap<>();
 
     private Image pendingCharacterImage;
+
+    /*se crea una variable boolean que reresentara los turnos de disparo, siendo el
+    * true para indicar disparo de usuario, y el false para disparo de maquina.*/
+    private boolean ShootTurn = true; //
+    private boolean gridDisabled = true;
+
+
 
     public void setCharacterImage(Image image) {
         this.pendingCharacterImage = image;
@@ -86,13 +94,11 @@ public class GameController {
 
         playerGrid = new GridPane();
         playerGridContainer.getChildren().add(playerGrid);
-
-        playerBoard.setupGrid(playerGrid);
+        playerBoard.setupGrid(playerGrid); //esta vaina crea el gridpain de la izq
 
         opponentGrid = new GridPane();
         mainGridContainer.getChildren().add(opponentGrid);
-
-        playerBoard.setupGrid(opponentGrid);
+        opponentBoard.setupGrid(opponentGrid); //esta vaina crea el gridpain de la derec
 
         deactivateGrid(opponentGrid);
         opponentButton.setDisable(true);
@@ -109,10 +115,26 @@ public class GameController {
                 final int r = row;
                 final int c = col;
                 Rectangle cell = playerBoard.createCell(r, c);
-                cell.setOnMouseClicked(e -> handleGridClick(e, r, c));
+                cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
                 playerGrid.add(cell, c, r);
             }
         }
+        //NOTA DEL FUTURO: hipotesis: creo que esto no hace falta crearlo como tal xd, en
+        //el handleplaybutt se crea esta vuelta
+        //OPONENTGRID CELLS EVENT
+        /*le tenemos que dar a las celdas del oponente el evento del click, para poder realizar
+        * los disparos en su grid*/
+        /**
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                final int r = row;
+                final int c = col;
+                Rectangle cell = opponentBoard.createCell(r, c);
+                cell.setOnMouseClicked(e -> handleMachineGridClick(e, r, c));
+                opponentGrid.add(cell, c, r);
+            }
+        }
+        **/
 
         // Inicializar flota y mapas
         for (Node child : fleetVBox.getChildren()) {
@@ -174,7 +196,35 @@ public class GameController {
         playerGridContainer.requestFocus();
     }
 
-    private void handleGridClick(MouseEvent event, int row, int col) {
+
+    private void handleMachineGridClick(MouseEvent event, int row, int col) {
+
+        if (gridDisabled == false)
+        {
+            System.out.println("tripi tropi");
+
+            int shottRow = row;
+            int shotCol = col;
+
+            //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
+            if (!opponentBoard.isWithinBounds(shottRow, shotCol))
+                return;
+
+            //aqui haria el playerShot(row,col) pa guardar el tiro
+
+            //creamos la figura del rectangulo
+            double width = 40;
+            double height = 40;
+            Rectangle shotRectangle = new Rectangle(width, height);
+            shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
+
+            //lo mostramos en el opponent grid
+            opponentGrid.add(shotRectangle, shotCol, shottRow);
+
+        }
+
+    }
+    private void handlePlayerGridClick(MouseEvent event, int row, int col) {
         if (selectedShip == null) return;
 
         int startRow = row;
@@ -188,9 +238,10 @@ public class GameController {
             case "RIGHT" -> startCol = col;
         }
 
-        if (!playerBoard.isWithinBounds(startRow, startCol)) {
-            return; // Fuera de límites
-        }
+        //OJO atento creo q Este condicional sobra, pues en la funcion de abajo ya se hace la verificacion
+      // if (!playerBoard.isWithinBounds(startRow, startCol)) {
+        //    return; // Fuera de límites
+       //}
 
         // Validar colocación usando el metodo del modelo
         if (!playerBoard.canPlaceShip(startRow, startCol, selectedShipSize, shipDirection)) {
@@ -199,6 +250,7 @@ public class GameController {
 
         // Colocar barco en el modelo
         playerBoard.placeShip(startRow, startCol, selectedShipSize, shipDirection);
+
 
         // Crear rectángulo visual del barco
         double width = 40;
@@ -318,7 +370,10 @@ public class GameController {
     private void handlePlayButton() {
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
-                Rectangle cell = playerBoard.createCell(row, col);
+                final int r = row;
+                final int c = col;
+                Rectangle cell = opponentBoard.createCell(row, col);
+                cell.setOnMouseClicked(e -> handleMachineGridClick(e, r, c));
                 opponentGrid.add(cell, col, row);
             }
         }
@@ -332,6 +387,9 @@ public class GameController {
         buttonsHBox.getChildren().remove(playButton);
         buttonsHBox.setAlignment(Pos.CENTER);
         opponentButton.setDisable(false);
+        gridDisabled = false; //asdasdasdasdadasd
+        //asdasd
+
     }
 
     @FXML
