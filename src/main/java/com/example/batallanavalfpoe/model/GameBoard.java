@@ -6,6 +6,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Random;
+
 public class GameBoard {
     protected boolean[][] occupiedCells;
     public int rows;
@@ -94,5 +96,15 @@ public class GameBoard {
             int c = col + dCol * i;
             setOccupied(r, c);
         }
+    }
+
+    public void MachineShot () {
+        //creamos una isntancia de randoms para poder generar el tiro aleatorio
+        Random random = new Random();
+
+        int shotRow = random.nextInt(10);;
+        int shotCol = random.nextInt(10);;
+
+
     }
 }

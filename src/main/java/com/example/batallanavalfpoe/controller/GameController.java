@@ -3,6 +3,7 @@ package com.example.batallanavalfpoe.controller;
 import com.example.batallanavalfpoe.model.GameBoard;
 import com.example.batallanavalfpoe.view.OpponentStage;
 import com.example.batallanavalfpoe.view.WelcomeStage;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,12 +19,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GameController {
     @FXML
@@ -57,7 +56,7 @@ public class GameController {
     private ImageView img;
 
     private GameBoard playerBoard = new GameBoard(10, 10);
-    /*creamos un opponenBoard*/
+    /*creamos un opponentBoard, mas abajo copiamos sus datos con el opcontroller*/
     private GameBoard opponentBoard = new GameBoard(10, 10);
 
 
@@ -72,8 +71,8 @@ public class GameController {
 
     /*se crea una variable boolean que reresentara los turnos de disparo, siendo el
     * true para indicar disparo de usuario, y el false para disparo de maquina.*/
-    private boolean ShootTurn = true; //
-    private boolean gridDisabled = true;
+    private boolean shootingTurn = true; //true == le toca al player :V:V:V
+    private boolean gridDisabled = true; //literal es solo un indicador extra para manejar los disparos
 
 
 
@@ -119,22 +118,6 @@ public class GameController {
                 playerGrid.add(cell, c, r);
             }
         }
-        //NOTA DEL FUTURO: hipotesis: creo que esto no hace falta crearlo como tal xd, en
-        //el handleplaybutt se crea esta vuelta
-        //OPONENTGRID CELLS EVENT
-        /*le tenemos que dar a las celdas del oponente el evento del click, para poder realizar
-        * los disparos en su grid*/
-        /**
-        for (int row = 0; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
-                final int r = row;
-                final int c = col;
-                Rectangle cell = opponentBoard.createCell(r, c);
-                cell.setOnMouseClicked(e -> handleMachineGridClick(e, r, c));
-                opponentGrid.add(cell, c, r);
-            }
-        }
-        **/
 
         // Inicializar flota y mapas
         for (Node child : fleetVBox.getChildren()) {
@@ -196,43 +179,87 @@ public class GameController {
         playerGridContainer.requestFocus();
     }
 
-
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
+        if(gridDisabled) return; //si disabled, faltan barcos, no haga nada
 
-        if (gridDisabled == false) //es decir, si el grid esta habilitao
-        {
+        if(shootingTurn != true ) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
 
-            int shottRow = row;
-            int shotCol = col;
+        //inicializamos variables
+        int shottRow = row;
+        int shotCol = col;
 
+        //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
+        if (!opponentBoard.isWithinBounds(shottRow, shotCol))
+            return;
 
-            //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
-            if (!opponentBoard.isWithinBounds(shottRow, shotCol))
-                return;
+        //aqui haria el playerShot(row,col) pa guardar el tiro
+        /*ignorar esto, esto lo dejo aca pq seria necesario para serializar mas tarde*/
 
-            //aqui haria el playerShot(row,col) pa guardar el tiro
+        //creamos la figura del rectangulo para simular graficamente el tiro
+        double width = 40;
+        double height = 40;
+        Rectangle shotRectangle = new Rectangle(width, height);
+        shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
 
-            //creamos la figura del rectangulo
-            double width = 40;
-            double height = 40;
-            Rectangle shotRectangle = new Rectangle(width, height);
-            shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
+        //lo mostramos en el opponent grid
+        opponentGrid.add(shotRectangle, shotCol, shottRow);
 
-            //lo mostramos en el opponent grid
-            opponentGrid.add(shotRectangle, shotCol, shottRow);
+        //ahora hagamos la respectiva comprobacion de hit o miss
+        if (opponentBoard.isOccupied(shottRow, shotCol)) {
+            System.out.println("SHOT!!!! siuuu++++++++++++++++++");
+            shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
 
-            //ahora hagamos la respectiva comprobacion de hit o miss
-
-            if (opponentBoard.isOccupied(shottRow, shotCol)) {
-                System.out.println("SHOT!!!! siuuu");
-            } else {
-                System.out.println("MISS!!!! awwww");
-            }
-
-
+        } else {
+            System.out.println("MISS!!!! awwww------------------");
+            shootingTurn = false; //pierde el turno
+            processMachineShot(); //llama a la maquina para que tire
         }
 
     }
+
+    private void processMachineShot() {
+        /*en escensia pausetransicion es una clase diseñada literal para "congelar" procesos
+        * del programa, NO los congela, da una ilusion*/
+        PauseTransition pause = new PauseTransition(Duration.millis(1500));
+        /*Setonfinish.pause dice QUE COSAS VA A EJECUTAR despues del tiempo de pausa (1500ms)
+        * lo q este dentro de esos { es lo q se va a retrasar el x tiempo*/
+        pause.setOnFinished(event -> {
+            boolean machineHit = true;
+            do {
+
+                //creamos el tiro de la maquina de manera aleatoria
+                Random random = new Random();
+                int MachineshotRow = random.nextInt(10);
+                int MachineshotCol = random.nextInt(10);
+
+                //aca creamos el respectivo rectanuglo para simular el tiro de maquina
+                double width = 40;
+                double height = 40;
+                Rectangle machineShotRectangle = new Rectangle(width, height);
+                machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
+
+                //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
+                playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
+
+                //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
+                if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
+                    System.out.println("NOS DIEROOOON");
+                    machineHit = true;
+                }else {
+                    System.out.println("La maquina FALLO");
+                    machineHit = false;
+                }
+
+            }while (machineHit);
+            //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
+            shootingTurn = true;
+
+        });
+        pause.play(); //esto se pone como "activador" del evento, si esta vaina, NO se ejecuta ni mrd
+
+    }
+
+
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
         if (selectedShip == null) return;
 
