@@ -17,6 +17,7 @@ public class OpponentController implements Initializable {
 
     @FXML
     private GridPane opponentGrid;
+
     private static List<PlacedShip> savedPlacedShips = null;
 
     private static final int BOARD_ROWS = 10;
@@ -24,10 +25,17 @@ public class OpponentController implements Initializable {
 
     private GameBoard opponentBoard;
 
+    private final List<Ship> fleet = new ArrayList<>();
+
     public GameBoard getGameBoard() {
         return opponentBoard;
     }
 
+
+    /*
+    segun tengo enetendido valeria crea shipplacement (una clase interna) que contiene la dirrecion y la columna y placedship
+    la cual tiene un shipplacement y un ship (contiene clase y nombre)
+     */
     public static class ShipPlacement {
         public String direction;
         int row, col;
@@ -49,10 +57,11 @@ public class OpponentController implements Initializable {
         }
     }
 
-    private final List<Ship> fleet = new ArrayList<>();
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        /*
+        se llama a la funcion de addFleet la cual crea objetos de la clase ship
+         */
         addFleet(4, "Portaviones", 1);
         addFleet(3, "Submarino", 2);
         addFleet(2, "Destructor", 3);
@@ -61,9 +70,12 @@ public class OpponentController implements Initializable {
         opponentBoard = new GameBoard(BOARD_ROWS, BOARD_COLS);
         opponentBoard.setupGrid(opponentGrid);
 
+        /*
+        crea los rectangulos que simulan las celdas, muestras la cuadricula y define el tamaño de las celdas 40x40
+         */
         for (int row = 0; row < BOARD_ROWS; row++) {
             for (int col = 0; col < BOARD_COLS; col++) {
-                opponentGrid.add(opponentBoard.createCell(BOARD_ROWS, BOARD_COLS), col, row);
+                opponentGrid.add(opponentBoard.createCell(), col, row);
             }
         }
 
@@ -77,12 +89,21 @@ public class OpponentController implements Initializable {
         }
     }
 
+    /*
+    recibe el tamaño, el nombre y la cantidad de barcos
+    y ademas, se agregan estos barcos a la lista
+     */
     private void addFleet(int size, String name, int count) {
         for (int i = 0; i < count; i++) {
             fleet.add(new Ship(size, name));
         }
     }
 
+    /*
+    devuelve una lista de placedships, hace un for el cual recorre el arreglo de barcos por cada barco y
+    realiza un while que genera numeros de columna y filas al azar, a demas se crea un arreglo con las dirreciones
+    y se llama al opponentboard con la funcion de canplace con el numero de columna y fila al azar, su tamaño y dirrecion
+     */
     private List<PlacedShip> placeAllShipsRandomly() {
         List<PlacedShip> placedShips = new ArrayList<>();
         Random random = new Random();
@@ -112,6 +133,10 @@ public class OpponentController implements Initializable {
         return savedPlacedShips;
     }
 
+    /*
+    recibe como parametro el arreglo de los barcos con la fila, comlumna, dirrecion, tamaño y tipo de barco y los genera en el grid pane
+    dependiendo de esos factores
+     */
     private void renderPlacedShips(List<PlacedShip> placedShips) {
         double cellSize = 40;
 
@@ -129,23 +154,29 @@ public class OpponentController implements Initializable {
 
             Rectangle rect = new Rectangle(width, height);
 
-            ImagePattern pattern = switch (ps.ship.getSize()) {
-                case 1 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/fragata.png")));
-                case 2 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destructor.png")));
-                case 3 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarino.png")));
-                case 4 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/portaviones.png")));
-                default -> null;
+            // para rotar la imagen junto con el recangulo
+            String imageName = switch (ps.ship.getSize()) {
+                case 1 -> "frigate";
+                case 2 -> "destroyer";
+                case 3 -> "submarine";
+                case 4 -> "carrier";
+                default -> "default";
             };
 
-            if (pattern != null) {
-                rect.setFill(pattern);
-            } else {
-                rect.setFill(Color.GRAY);
-            }
+            String path = switch (ps.placement.direction) {
+                case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                default -> "/com/example/batallanavalfpoe/images/default_right.png";
+            };
 
-            switch (ps.placement.direction) {
-                case "LEFT" -> rect.setScaleX(-1);
-                case "DOWN" -> rect.setScaleY(-1);
+            try {
+                Image image = new Image(getClass().getResourceAsStream(path));
+                ImagePattern pattern = new ImagePattern(image);
+                rect.setFill(pattern);
+            } catch (Exception e) {
+                rect.setFill(Color.GRAY);
             }
 
             opponentGrid.add(rect, ps.placement.col, ps.placement.row);

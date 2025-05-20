@@ -22,13 +22,7 @@ import java.util.List;
 
 public class CharacterSelectorController {
     @FXML
-    private Button jugarButton;
-
-    @FXML
     private ImageView imageView;
-
-    @FXML
-    private Button previousButton, nextButton;
 
     @FXML
     private TextField textField;
@@ -42,8 +36,8 @@ public class CharacterSelectorController {
     /*creo este arreglo pq necesito tener como tal los STRING de los path de imagenes, y ps
     la lista de abajo la unica manera en la que m lo devuelve es en Image. tonces no sirve
     * */
-    private String PathListImages[] = { "/com/example/batallanavalfpoe/images/personajeUno.PNG", "/com/example/batallanavalfpoe/images/personajeDos.PNG", "/com/example/batallanavalfpoe/images/personajeTres.PNG",
-            "/com/example/batallanavalfpoe/images/personajeCuatro.PNG","/com/example/batallanavalfpoe/images/personajeCinco.PNG","/com/example/batallanavalfpoe/images/personajeSeis.PNG", "/com/example/batallanavalfpoe/images/personajeSeis.PNG"
+    private String PathListImages[] = { "/com/example/batallanavalfpoe/images/character1.PNG", "/com/example/batallanavalfpoe/images/character2.PNG", "/com/example/batallanavalfpoe/images/character3.PNG",
+            "/com/example/batallanavalfpoe/images/character4.PNG","/com/example/batallanavalfpoe/images/character5.PNG","/com/example/batallanavalfpoe/images/character6.PNG", "/com/example/batallanavalfpoe/images/character7.PNG"
                                       };
     //Por supuesto definmos el texthanlder
     private PlainTextFileHandler plainTextFileHandler;
@@ -68,13 +62,13 @@ public class CharacterSelectorController {
         });
 
         images = List.of(
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeUno.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeDos.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeTres.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeCuatro.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeCinco.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeSeis.PNG")),
-                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/personajeSiete.PNG"))
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character1.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character2.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character3.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character4.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character5.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character6.PNG")),
+                new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/character7.PNG"))
 
         );
         imageView.setImage(images.get(currentIndex));
