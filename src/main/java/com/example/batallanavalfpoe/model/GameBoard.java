@@ -19,18 +19,30 @@ public class GameBoard {
         this.occupiedCells = new boolean[rows][cols];
     }
 
+    /*
+    recibe como parametro fila y columna, si estas son menores a las del tablero devuelve true
+     */
     public boolean isWithinBounds(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
+    /*
+    recordar que e tablero es un arreglo de bool entonces devuelve el bool dependiendo de la fila y columna
+     */
     public boolean isOccupied(int row, int col) {
         return occupiedCells[row][col];
     }
 
+    /*
+    pone true en una celda en especifico
+     */
     public void setOccupied(int row, int col) {
         occupiedCells[row][col] = true;
     }
 
+    /*
+    muestra las lineas del tablero, fija su tamaño, fija el tamaño de cada celda de 40x40
+     */
     public void setupGrid(GridPane gridPane) {
         gridPane.setGridLinesVisible(true);
         gridPane.setPrefSize(400, 400);
@@ -40,13 +52,19 @@ public class GameBoard {
         }
     }
 
-    public Rectangle createCell(int row, int col) {
+    /*
+    crea los rectangulos que simulan las celdas
+     */
+    public Rectangle createCell() {
         Rectangle cell = new Rectangle(40, 40);
         cell.setFill(Color.LIGHTGRAY);
         cell.setStroke(Color.BLACK);
         return cell;
     }
 
+    /*
+    desactiva las celdas
+     */
     public void deactivateGrid(GridPane grid) {
         for (var node : grid.getChildren()) {
             if (node instanceof Rectangle) {
@@ -55,7 +73,9 @@ public class GameBoard {
         }
     }
 
-    // Valida si se puede colocar un barco en el tablero, según dirección y tamaño
+    /*
+    Valida si se puede colocar un barco en el tablero, según dirección y tamaño
+     */
     public boolean canPlaceShip(int row, int col, int size, String direction) {
         int dRow = 0, dCol = 0;
         switch (direction) {
@@ -76,11 +96,9 @@ public class GameBoard {
         return true;
     }
 
-
-
-
-
-    // Coloca el barco en el tablero actualizando las celdas ocupadas
+    /*
+     Coloca el barco en el tablero actualizando las celdas ocupadas
+     */
     public void placeShip(int row, int col, int size, String direction) {
         int dRow = 0, dCol = 0;
 
@@ -98,13 +116,4 @@ public class GameBoard {
         }
     }
 
-    public void MachineShot () {
-        //creamos una isntancia de randoms para poder generar el tiro aleatorio
-        Random random = new Random();
-
-        int shotRow = random.nextInt(10);;
-        int shotCol = random.nextInt(10);;
-
-
-    }
 }

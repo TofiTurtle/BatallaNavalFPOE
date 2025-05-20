@@ -22,13 +22,7 @@ import java.util.List;
 
 public class CharacterSelectorController {
     @FXML
-    private Button jugarButton;
-
-    @FXML
     private ImageView imageView;
-
-    @FXML
-    private Button previousButton, nextButton;
 
     @FXML
     private TextField textField;

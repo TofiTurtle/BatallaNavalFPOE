@@ -75,7 +75,10 @@ public class GameController {
     private boolean gridDisabled = true; //literal es solo un indicador extra para manejar los disparos
 
 
-
+    /*
+    Esta funcion recibe como parametro una imagen y l apone en el imageView
+    de game
+     */
     public void setCharacterImage(Image image) {
         this.pendingCharacterImage = image;
         if (img != null) {
@@ -83,14 +86,26 @@ public class GameController {
         }
     }
 
+    /*
+    Esta funcion es lo mismo que la anterior pero con el nickname que se le ingresen
+     */
     public void setNameLabel(String text) {
         nameLabel.setText(text);
     }
 
     @FXML
     private void initialize() {
+        /*
+        Se crea un opponent stage debido a como valeria crea los barcos del oponente,
+        ella los crea en un stage totalmente diferente al gridpane del oponente (el principal)
+        y los crea en otro stage, entonces al momento de iniciar el gamestage creo una instancia de opponent para
+        crear los barcos de una
+         */
         opponentStage = new OpponentStage();
 
+        /*
+        Se crean 2 gridPanes de manera dinamica
+         */
         playerGrid = new GridPane();
         playerGridContainer.getChildren().add(playerGrid);
         playerBoard.setupGrid(playerGrid); //esta vaina crea el gridpain de la izq
@@ -99,32 +114,52 @@ public class GameController {
         mainGridContainer.getChildren().add(opponentGrid);
         opponentBoard.setupGrid(opponentGrid); //esta vaina crea el gridpain de la derec
 
+        /*
+        Se desactiva el gridpane del oponente mientras y tambien desactiva el boton que muestra el stage donde
+        se encuentran los barcos del oponente
+         */
         deactivateGrid(opponentGrid);
         opponentButton.setDisable(true);
 
+        /*
+        se llama la funcion que copia los barcos creados en el stage del oponente (RECORDAR QUE LOS BARCOS NO
+        SE CREAN DIRECTAMENTE EN EL GRIDPANE PRINCIPAL DEL ENEMIGO)
+         */
         copyOpponentShips();
 
         if (pendingCharacterImage != null) {
             img.setImage(pendingCharacterImage);
         }
 
-        // Crear celdas para playerGrid con evento click
+         /*
+         Aqui puede parece confunso por como se declaran las variables pero simplemente se estan creando rectangulos
+         (no son cells como tal) se le puso el nombre de cells ya que simula una celda del tablero, pero en escencia
+         es un rectangulo dentro de cada gridpane, a demas se le asigna un evento de clic
+         */
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
                 final int r = row;
                 final int c = col;
-                Rectangle cell = playerBoard.createCell(r, c);
+                Rectangle cell = playerBoard.createCell();
                 cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
                 playerGrid.add(cell, c, r);
             }
         }
 
+        /*
+        puede parece confunso este for(como se declara) pero es mas sencillo de lo que parece, para eso tenemos que
+        retomar la idea de que los nodos son elemtos visuales, entonces que hacemos aca, aca recorremos el vbox donde
+        se encuentran los rectangulos, o sea, lo que dice la linea del for es: por cada nodo (elemento visual) que se encuentre
+        en el fleetvbox se va poner la imagen y aparte se pone un evento de clic al rectangulo (el evento de selected)
+         */
         // Inicializar flota y mapas
-        for (Node child : fleetVBox.getChildren()) {
-            if (child instanceof Rectangle rect) {
-                int size = (int) (rect.getWidth() / 40);
-                shipSizeMap.put(rect, size);
 
+        for (Node child : fleetVBox.getChildren()) {
+            if (child instanceof Rectangle rect) { //aqui se pregunta si el nodo que se encuentra en el fleetvbox es un rectangulo y se guarda ese rectangulo en una variable
+                int size = (int) (rect.getWidth() / 40); //se divide el largo del rectangulo entre 40 (debido a que ese es el tamaño de cada lado de una celda)
+                shipSizeMap.put(rect, size);//se guarda el rectangulo y el numero que me dio la division
+
+                //dependiendo del numero de la division se asigna una imagen
                 ImagePattern pattern = switch (size) {
                     case 1 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/frigate_right.png"))));
                     case 2 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destroyer_right.png"))));
@@ -134,12 +169,17 @@ public class GameController {
                 };
 
                 rect.setFill(pattern);
+                //se guarda el rectangulo y su imagen correspondiente
                 shipImageMap.put(rect, pattern);
 
                 rect.setOnMouseClicked(event -> selectShip(rect));
             }
         }
 
+        /*
+        Aqui se le pone de evento al stack pane (recordar que este contiene: el gridpane, el rectangulo que simula la celda,
+        el barco) y se asigna a un string la dirrecion dependiendo de la tecla que undiste
+         */
         // Evento teclado para cambiar dirección
         playerGridContainer.setOnKeyPressed(event -> {
             if (selectedShip == null) return;
@@ -151,14 +191,24 @@ public class GameController {
             }
         });
 
+        /*
+        segun entendi esto es para que depues de que la interfaz este lista ya se puedan recibir ventos
+         */
         Platform.runLater(() -> {
             playerGridContainer.requestFocus();
             playerGridContainer.setFocusTraversable(true);
         });
 
+        /*
+        se desactiva el boton de jugar asdjk
+         */
         playButton.setDisable(true);
     }
 
+    /*
+    funcion la cual recibe como parametro un recntagulo y lo que hace es cambiar el borde del rectangulo
+    asignar la dirrecion
+     */
     private void selectShip(Rectangle ship) {
         if (selectedShip != null) {
             selectedShip.setStroke(Color.BLACK);
@@ -168,7 +218,7 @@ public class GameController {
         selectedShip = ship;
         selectedShipSize = shipSizeMap.get(ship);
 
-        ship.setStroke(Color.YELLOW);
+        ship.setStroke(Color.BLACK);
         ship.setStrokeWidth(3);
 
         shipDirection = "RIGHT";
@@ -216,11 +266,8 @@ public class GameController {
         }
 
     }
-    @FXML
-    private ImageView doctorimg;
 
     private void processMachineShot() {
-        doctorimg.setVisible(true);
         /*en escensia pausetransicion es una clase diseñada literal para "congelar" procesos
         * del programa, NO los congela, da una ilusion*/
         PauseTransition pause = new PauseTransition(Duration.millis(1500));
@@ -256,7 +303,6 @@ public class GameController {
             }while (machineHit);
             //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
             shootingTurn = true;
-            doctorimg.setVisible(false);
 
         });
         pause.play(); //esto se pone como "activador" del evento, si esta vaina, NO se ejecuta ni mrd
@@ -399,19 +445,19 @@ public class GameController {
 
             // 6. Creamos un rectángulo que representa el barco
             Rectangle rect = new Rectangle(width, height);
-            rect.setFill(Color.TRANSPARENT); //usamos este color para que trin
+            rect.setFill(Color.TRANSPARENT);
             rect.setStroke(Color.TRANSPARENT);
 
-            // 9. Ajustamos orientación para LEFT y DOWN (espejo)
+            // 7. Ajustamos orientación para LEFT y DOWN (espejo)
             switch (ps.placement.direction) {
                 case "LEFT" -> rect.setScaleX(-1);
                 case "DOWN" -> rect.setScaleY(-1);
             }
 
-            // 10. Agregamos el rectángulo en el GridPane (en la posición correcta)
+            // 8. Agregamos el rectángulo en el GridPane (en la posición correcta)
             opponentGrid.add(rect, ps.placement.col, ps.placement.row);
 
-            // 11. Ajustamos el tamaño del barco en filas o columnas según orientación
+            // 9. Ajustamos el tamaño del barco en filas o columnas según orientación
             if (vertical) {
                 GridPane.setRowSpan(rect, ps.ship.getSize());
             } else {
@@ -420,14 +466,16 @@ public class GameController {
         }
     }
 
-
+    /*
+    crea rectangulos con eventos de mouse
+     */
     @FXML
     private void handlePlayButton() {
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
                 final int r = row;
                 final int c = col;
-                Rectangle cell = opponentBoard.createCell(row, col);
+                Rectangle cell = opponentBoard.createCell();
                 cell.setOnMouseClicked(e -> handleMachineGridClick(e, r, c));
                 opponentGrid.add(cell, col, row);
             }
