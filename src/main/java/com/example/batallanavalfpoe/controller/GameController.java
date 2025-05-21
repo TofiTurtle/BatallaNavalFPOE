@@ -231,8 +231,7 @@ public class GameController {
 
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
         if(gridDisabled) return; //si disabled, faltan barcos, no haga nada
-
-        if(shootingTurn != true ) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
+        if(!shootingTurn) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
 
         //inicializamos variables
         int shottRow = row;
@@ -262,6 +261,7 @@ public class GameController {
         } else {
             System.out.println("MISS!!!! awwww------------------");
             shootingTurn = false; //pierde el turno
+            opponentGrid.setDisable(true); //hacemos esto para que el jugador NO SIGA TIRANDO A QUEMARROPA. falla->bloqueamos
             processMachineShot(); //llama a la maquina para que tire
         }
 
@@ -269,46 +269,42 @@ public class GameController {
 
     private void processMachineShot() {
         /*en escensia pausetransicion es una clase diseñada literal para "congelar" procesos
-        * del programa, NO los congela, da una ilusion*/
-        PauseTransition pause = new PauseTransition(Duration.millis(1500));
-        /*Setonfinish.pause dice QUE COSAS VA A EJECUTAR despues del tiempo de pausa (1500ms)
-        * lo q este dentro de esos { es lo q se va a retrasar el x tiempo*/
-        pause.setOnFinished(event -> {
-            boolean machineHit = true;
-            do {
+        del programa, NO los congela, da una ilusion
+        Setonfinish.pause dice QUE COSAS VA A EJECUTAR despues del tiempo de pausa (1500ms)
+         lo q este dentro de esos { es lo q se va a retrasar el x tiempo*/
+        shootingTurn = false;// ---> turno de la maquina
 
-                //creamos el tiro de la maquina de manera aleatoria
-                Random random = new Random();
-                int MachineshotRow = random.nextInt(10);
-                int MachineshotCol = random.nextInt(10);
+        PauseTransition thinkingPause = new PauseTransition(Duration.millis(1500));
+        thinkingPause.setOnFinished(e -> {
+            //creamos el tiro de la maquina de manera aleatoria
+            Random random = new Random();
+            int MachineshotRow = random.nextInt(10);
+            int MachineshotCol = random.nextInt(10);
 
-                //aca creamos el respectivo rectanuglo para simular el tiro de maquina
-                double width = 40;
-                double height = 40;
-                Rectangle machineShotRectangle = new Rectangle(width, height);
-                machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
+            //aca creamos el respectivo rectanuglo para simular el tiro de maquina
+            double width = 40;
+            double height = 40;
+            Rectangle machineShotRectangle = new Rectangle(width, height);
+            machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
 
-                //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
-                playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
+            //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
+            playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
 
-                //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
-                if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
-                    System.out.println("NOS DIEROOOON");
-                    machineHit = true;
-                }else {
-                    System.out.println("La maquina FALLO");
-                    machineHit = false;
-                }
-
-            }while (machineHit);
-            //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
-            shootingTurn = true;
-
+            //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
+            if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
+                System.out.println("NOS DIEROOOON");
+                processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
+            }else {
+                System.out.println("La maquina FALLO");
+                opponentGrid.setDisable(false); //si la maquina falla, volvemos a activar Ogrid pa que siga tirando
+            }
         });
-        pause.play(); //esto se pone como "activador" del evento, si esta vaina, NO se ejecuta ni mrd
+        thinkingPause.play(); //ejecutamos la vaina que quede pensando
+
+        //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
+        shootingTurn = true;
 
     }
-
 
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
         if (selectedShip == null) return;
@@ -360,7 +356,7 @@ public class GameController {
 
         /*aca recibe la direccion que se desea rotar, y dependiendo del tamaño del barco (imagename)
         se le asigna la imagen en esa direccion*/
-        
+
         String path = switch (shipDirection) {
             case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
             case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
