@@ -18,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -54,6 +55,8 @@ public class GameController {
 
     @FXML
     private ImageView img;
+
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
     private GameBoard playerBoard = new GameBoard(10, 10);
     /*creamos un opponentBoard, mas abajo copiamos sus datos con el opcontroller*/
@@ -404,7 +407,7 @@ public class GameController {
     private void copyOpponentShips() {
 
         // 2. Obtenemos los barcos guardados del OpponentController
-        List<OpponentController.PlacedShip> placedShips = OpponentController.getSavedPlacedShips();
+        List<OpponentController.Ship> placedShips = OpponentController.getSavedPlacedShips();
         if (placedShips == null) return; // Si no hay barcos, salimos
 
         //***************************************************************************
@@ -412,12 +415,12 @@ public class GameController {
         * que se tienen dos instancias del Oboard, pues con copiamos los datos para
         * trabajar bajo las mismas vueltas*/
         //Osea, esto es importante, estamos copiando los datos para usar en OponentBoard
-        for (OpponentController.PlacedShip ps : placedShips) {
+        for (OpponentController.Ship ship : placedShips) {
             opponentBoard.placeShip(
-                    ps.placement.row,
-                    ps.placement.col,
-                    ps.ship.getSize(),
-                    ps.placement.direction
+                    ship.getRow(),
+                    ship.getCol(),
+                    ship.getSize(),
+                    ship.getDirection()
             );
         }
         //*************************************************************************
@@ -426,17 +429,17 @@ public class GameController {
         double cellSize = 40;
 
         // 4. Recorremos cada barco colocado
-        for (OpponentController.PlacedShip ps : placedShips) {
+        for (OpponentController.Ship ship : placedShips) {
             double width = cellSize;
             double height = cellSize;
 
             // 5. Determinamos orientación (vertical u horizontal)
-            boolean vertical = ps.placement.direction.equals("UP") || ps.placement.direction.equals("DOWN");
+            boolean vertical = ship.getDirection().equals("UP") || ship.getDirection().equals("DOWN");
 
             if (vertical) {
-                height = ps.ship.getSize() * cellSize; // Altura ajustada para barcos verticales
+                height = ship.getSize() * cellSize; // Altura ajustada para barcos verticales
             } else {
-                width = ps.ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
+                width = ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
             }
 
             // 6. Creamos un rectángulo que representa el barco
@@ -445,19 +448,19 @@ public class GameController {
             rect.setStroke(Color.TRANSPARENT);
 
             // 7. Ajustamos orientación para LEFT y DOWN (espejo)
-            switch (ps.placement.direction) {
+            switch (ship.getDirection()) {
                 case "LEFT" -> rect.setScaleX(-1);
                 case "DOWN" -> rect.setScaleY(-1);
             }
 
             // 8. Agregamos el rectángulo en el GridPane (en la posición correcta)
-            opponentGrid.add(rect, ps.placement.col, ps.placement.row);
+            opponentGrid.add(rect, ship.getCol(), ship.getRow());
 
             // 9. Ajustamos el tamaño del barco en filas o columnas según orientación
             if (vertical) {
-                GridPane.setRowSpan(rect, ps.ship.getSize());
+                GridPane.setRowSpan(rect, ship.getSize());
             } else {
-                GridPane.setColumnSpan(rect, ps.ship.getSize());
+                GridPane.setColumnSpan(rect, ship.getSize());
             }
         }
     }

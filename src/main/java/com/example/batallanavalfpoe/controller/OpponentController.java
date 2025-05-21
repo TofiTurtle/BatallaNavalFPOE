@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import com.example.batallanavalfpoe.model.GameBoard;
-import com.example.batallanavalfpoe.model.Ship;
 
 import java.net.URL;
 import java.util.*;
@@ -18,7 +17,7 @@ public class OpponentController implements Initializable {
     @FXML
     private GridPane opponentGrid;
 
-    private static List<PlacedShip> savedPlacedShips = null;
+    private static List<Ship> savedShips = null;
 
     private static final int BOARD_ROWS = 10;
     private static final int BOARD_COLS = 10;
@@ -31,29 +30,48 @@ public class OpponentController implements Initializable {
         return opponentBoard;
     }
 
-
-    /*
-    segun tengo enetendido valeria crea shipplacement (una clase interna) que contiene la dirrecion y la columna y placedship
-    la cual tiene un shipplacement y un ship (contiene clase y nombre)
+    /* elimine las dos clases que habian antes (placedship y shipplacement) y pase todo a una sola clase interna q es
+    ship, las cosas q recibian los constructores de las otras clasea aqui son solo metodos q se llaman cuando se
+    necesitan y ya, pero se cumple exactamente la misma funcion
      */
-    public static class ShipPlacement {
-        public String direction;
-        int row, col;
+    public class Ship {
+        private int size;
+        private String name;
+        private int row;
+        private int col;
+        private String direction;
 
-        ShipPlacement(int row, int col, String direction) {
+        public Ship(int size, String name) {
+            this.size = size;
+            this.name = name;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setPlacement(int row, int col, String direction) {
             this.row = row;
             this.col = col;
             this.direction = direction;
         }
-    }
 
-    static class PlacedShip {
-        ShipPlacement placement;
-        Ship ship;
+        public int getRow() {
+            return row;
+        }
 
-        PlacedShip(ShipPlacement placement, Ship ship) {
-            this.placement = placement;
-            this.ship = ship;
+        public int getCol() {
+            return col;
+        }
+
+        public String getDirection() {
+            return direction;
+        }
+
+        @Override
+        public String toString() {
+            return "Ship{" + "size=" + size + ", name='" + name + '\'' +
+                    ", row=" + row + ", col=" + col + ", direction='" + direction + '\'' + '}';
         }
     }
 
@@ -78,14 +96,17 @@ public class OpponentController implements Initializable {
                 opponentGrid.add(opponentBoard.createCell(), col, row);
             }
         }
-
-        if (savedPlacedShips != null) {
-            for (PlacedShip ps : savedPlacedShips) {
-                opponentBoard.placeShip(ps.placement.row, ps.placement.col, ps.ship.getSize(), ps.placement.direction);
+        /* si hay barcos guardados anterirmente (savedships), los pone en el opponentboard, esto se hace para
+        q no cambien la posicion de los barcos cada vez q se abre el opponentboard q era lo q pasaba antes
+         */
+        if (savedShips != null) {
+            for (Ship ship : savedShips) {
+                opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship.getSize(), ship.getDirection());
             }
-            renderPlacedShips(savedPlacedShips);
+            renderPlacedShips(savedShips);
         } else {
-            savedPlacedShips = placeAllShipsRandomly();
+            savedShips = placeAllShipsRandomly(); /* si no hay nada en savedships
+                                          (la primera vez q se abre el opponentboard) se ponen alatoriamente los barcos */
         }
     }
 
@@ -100,12 +121,12 @@ public class OpponentController implements Initializable {
     }
 
     /*
-    devuelve una lista de placedships, hace un for el cual recorre el arreglo de barcos por cada barco y
+    devuelve una lista de ships, hace un for el cual recorre el arreglo de barcos por cada barco y
     realiza un while que genera numeros de columna y filas al azar, a demas se crea un arreglo con las dirreciones
     y se llama al opponentboard con la funcion de canplace con el numero de columna y fila al azar, su tamaño y dirrecion
      */
-    private List<PlacedShip> placeAllShipsRandomly() {
-        List<PlacedShip> placedShips = new ArrayList<>();
+    private List<Ship> placeAllShipsRandomly() {
+        List<Ship> placedShips = new ArrayList<>();
         Random random = new Random();
 
         for (Ship ship : fleet) {
@@ -119,43 +140,44 @@ public class OpponentController implements Initializable {
 
                 if (opponentBoard.canPlaceShip(row, col, ship.getSize(), direction)) {
                     opponentBoard.placeShip(row, col, ship.getSize(), direction);
-                    placedShips.add(new PlacedShip(new ShipPlacement(row, col, direction), ship));
+                    ship.setPlacement(row, col, direction);
+                    placedShips.add(ship);
                     placed = true;
                 }
             }
         }
-
         renderPlacedShips(placedShips);
         return placedShips;
     }
 
-    public static List<PlacedShip> getSavedPlacedShips() {
-        return savedPlacedShips;
+    /*retorna los barcos guardados en la lista de ship*/
+
+    public static List<Ship> getSavedPlacedShips() {
+        return savedShips;
     }
 
     /*
     recibe como parametro el arreglo de los barcos con la fila, comlumna, dirrecion, tamaño y tipo de barco y los genera en el grid pane
     dependiendo de esos factores
      */
-    private void renderPlacedShips(List<PlacedShip> placedShips) {
+    private void renderPlacedShips(List<Ship> ships) {
         double cellSize = 40;
 
-        for (PlacedShip ps : placedShips) {
+        for (Ship ship : ships) {
             double width = cellSize;
             double height = cellSize;
 
-            boolean vertical = ps.placement.direction.equals("UP") || ps.placement.direction.equals("DOWN");
+            boolean vertical = ship.getDirection().equals("UP") || ship.getDirection().equals("DOWN");
 
             if (vertical) {
-                height = ps.ship.getSize() * cellSize;
+                height = ship.getSize() * cellSize;
             } else {
-                width = ps.ship.getSize() * cellSize;
+                width = ship.getSize() * cellSize;
             }
 
             Rectangle rect = new Rectangle(width, height);
 
-            // para rotar la imagen junto con el recangulo
-            String imageName = switch (ps.ship.getSize()) {
+            String imageName = switch (ship.getSize()) {
                 case 1 -> "frigate";
                 case 2 -> "destroyer";
                 case 3 -> "submarine";
@@ -163,7 +185,7 @@ public class OpponentController implements Initializable {
                 default -> "default";
             };
 
-            String path = switch (ps.placement.direction) {
+            String path = switch (ship.getDirection()) {
                 case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
                 case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
                 case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
@@ -179,12 +201,12 @@ public class OpponentController implements Initializable {
                 rect.setFill(Color.GRAY);
             }
 
-            opponentGrid.add(rect, ps.placement.col, ps.placement.row);
+            opponentGrid.add(rect, ship.getCol(), ship.getRow());
 
             if (vertical) {
-                GridPane.setRowSpan(rect, ps.ship.getSize());
+                GridPane.setRowSpan(rect, ship.getSize());
             } else {
-                GridPane.setColumnSpan(rect, ps.ship.getSize());
+                GridPane.setColumnSpan(rect, ship.getSize());
             }
         }
     }

@@ -7,16 +7,19 @@ import com.example.batallanavalfpoe.view.GameStage;
 import com.example.batallanavalfpoe.view.RulesStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
 public class WelcomeController {
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
+
+
     //Atributo de la clase WelcomeController
     //necesitamos tener el plaintexthandler
     PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();

@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
+<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
@@ -24,7 +24,7 @@
                   </ImageView>
                   <Label fx:id="nameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="36.0" prefWidth="274.0" textAlignment="CENTER">
                      <font>
-                        <Font size="25.0" />
+                        <Font name="Star Jedi Logo MonoLine" size="25.0" />
                      </font>
                   </Label>
                </children>
@@ -32,11 +32,13 @@
                   <Insets right="320.0" />
                </HBox.margin>
             </VBox>
-            <Button mnemonicParsing="false" prefHeight="127.0" prefWidth="45.0" text="shut" />
-            <Label prefHeight="86.0" prefWidth="582.0" text="Posiciona tus flotas" textAlignment="CENTER">
+            <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="86.0" prefWidth="598.0" text="Posiciona tus flotas" textAlignment="RIGHT">
                <font>
-                  <Font size="47.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="40.0" />
                </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
             </Label>
          </children>
          <opaqueInsets>
@@ -48,7 +50,11 @@
          <children>
             <StackPane prefHeight="470.0" prefWidth="200.0">
                <VBox fx:id="fleetVBox" alignment="CENTER" prefHeight="490.0" prefWidth="261.0" spacing="5.0">
-                  <Label alignment="CENTER" prefHeight="30.0" prefWidth="214.0" style="-fx-font-size: 20px;" text="FLOTAS DISPONIBLES" />
+                  <Label text="flotas disponibles">
+                     <font>
+                        <Font name="Star Jedi Logo MonoLine" size="17.0" />
+                     </font>
+                  </Label>
                   <Rectangle fx:id="carrier" arcHeight="10" arcWidth="10" fill="#6A5ACD" height="40.0" stroke="black" width="160.0" />
 
                   <Rectangle fx:id="submarine1" arcHeight="10" arcWidth="10" fill="#20B2AA" height="40.0" stroke="black" width="120.0" />
@@ -66,7 +72,11 @@
             </StackPane>
 
             <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
-               <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Jugador" />
+               <Label text="jugador">
+                  <font>
+                     <Font name="Star Jedi Logo MonoLine" size="18.0" />
+                  </font>
+               </Label>
                <StackPane fx:id="playerGridContainer" prefHeight="400.0">
                   <cursor>
                      <Cursor fx:constant="HAND" />
@@ -77,7 +87,10 @@
             </VBox>
 
             <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
-               <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Oponente" />
+               <Label text="oponente">
+                  <font>
+                     <Font name="Star Jedi Logo MonoLine" size="18.0" />
+                  </font></Label>
                <StackPane fx:id="mainGridContainer" prefHeight="400.0">
                   <cursor>
                      <Cursor fx:constant="HAND" />
@@ -88,25 +101,25 @@
 
       <HBox fx:id="buttonsHBox" alignment="CENTER" prefHeight="100.0" spacing="50.0">
          <children>
-            <Button fx:id="leaveButton" onAction="#goToWelcomeStage" prefHeight="69.0" prefWidth="282.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="Abandonar juego">
+            <Button fx:id="leaveButton" onAction="#goToWelcomeStage" prefHeight="78.0" prefWidth="373.0" style="-fx-background-color: transparent; -fx-border-width: 1.5px; -fx-border-color: black;" text="Abandonar juego">
                <font>
-                  <Font size="31.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="24.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="playButton" onAction="#handlePlayButton" style="-fx-background-color: transparent; -fx-border-color: black;" text="Jugar">
+            <Button fx:id="playButton" onAction="#handlePlayButton" style="-fx-background-color: transparent; -fx-border-width: 1.5px; -fx-border-color: black;" text="Jugar">
                <font>
-                  <Font size="31.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="24.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="opponentButton" onAction="#showOpponentBoard" style="-fx-background-color: transparent; -fx-border-color: black;" text="Ver posición del oponente">
+            <Button fx:id="opponentButton" onAction="#showOpponentBoard" style="-fx-background-color: transparent; -fx-border-width: 1.5px; -fx-border-color: black;" text="ver posición del oponente">
                <font>
-                  <Font size="31.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="24.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />

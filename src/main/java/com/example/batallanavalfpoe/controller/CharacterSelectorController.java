@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -32,6 +33,7 @@ public class CharacterSelectorController {
 
     private List<Image> images;
     private int currentIndex = 2;
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
     /*creo este arreglo pq necesito tener como tal los STRING de los path de imagenes, y ps
     la lista de abajo la unica manera en la que m lo devuelve es en Image. tonces no sirve
