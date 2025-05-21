@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
+<VBox alignment="CENTER" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.GameController">
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <VBox alignment="CENTER" prefHeight="186.0" prefWidth="266.0">
                <children>
                   <ImageView fx:id="img" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ImageView>
-                  <Label fx:id="nameLabel" prefHeight="32.0" prefWidth="84.0">
+                  <Label fx:id="nameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="36.0" prefWidth="274.0" textAlignment="CENTER">
                      <font>
                         <Font size="25.0" />
                      </font>
@@ -28,6 +32,7 @@
                   <Insets right="320.0" />
                </HBox.margin>
             </VBox>
+            <Button mnemonicParsing="false" prefHeight="127.0" prefWidth="45.0" text="shut" />
             <Label prefHeight="86.0" prefWidth="582.0" text="Posiciona tus flotas" textAlignment="CENTER">
                <font>
                   <Font size="47.0" />
@@ -43,7 +48,7 @@
          <children>
             <StackPane prefHeight="470.0" prefWidth="200.0">
                <VBox fx:id="fleetVBox" alignment="CENTER" prefHeight="490.0" prefWidth="261.0" spacing="5.0">
-                  <Label alignment="CENTER" prefHeight="30.0" prefWidth="214.0" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Flotas disponibles" />
+                  <Label alignment="CENTER" prefHeight="30.0" prefWidth="214.0" style="-fx-font-size: 20px;" text="FLOTAS DISPONIBLES" />
                   <Rectangle fx:id="carrier" arcHeight="10" arcWidth="10" fill="#6A5ACD" height="40.0" stroke="black" width="160.0" />
 
                   <Rectangle fx:id="submarine1" arcHeight="10" arcWidth="10" fill="#20B2AA" height="40.0" stroke="black" width="120.0" />
@@ -62,27 +67,50 @@
 
             <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Jugador" />
-               <StackPane fx:id="playerGridContainer" prefHeight="400.0" />
+               <StackPane fx:id="playerGridContainer" prefHeight="400.0">
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets></StackPane>
             </VBox>
 
             <VBox alignment="CENTER" prefWidth="400.0" spacing="10">
                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Oponente" />
-               <StackPane fx:id="mainGridContainer" prefHeight="400.0" />
+               <StackPane fx:id="mainGridContainer" prefHeight="400.0">
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor></StackPane>
             </VBox>
          </children>
       </HBox>
 
       <HBox fx:id="buttonsHBox" alignment="CENTER" prefHeight="100.0" spacing="50.0">
          <children>
-            <Button fx:id="leaveButton" onAction="#goToWelcomeStage" text="Abandonar juego">
+            <Button fx:id="leaveButton" onAction="#goToWelcomeStage" prefHeight="69.0" prefWidth="282.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="Abandonar juego">
                <font>
                   <Font size="31.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </Button>
-            <Button fx:id="playButton" onAction="#activateOpponentGrid" text="Jugar">
+            <Button fx:id="playButton" onAction="#handlePlayButton" style="-fx-background-color: transparent; -fx-border-color: black;" text="Jugar">
                <font>
                   <Font size="31.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+            <Button fx:id="opponentButton" onAction="#showOpponentBoard" style="-fx-background-color: transparent; -fx-border-color: black;" text="Ver posición del oponente">
+               <font>
+                  <Font size="31.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </Button>
          </children>
          <VBox.margin>

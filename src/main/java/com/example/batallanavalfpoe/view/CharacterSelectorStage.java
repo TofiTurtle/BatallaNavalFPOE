@@ -9,9 +9,10 @@ public class CharacterSelectorStage extends Stage {
     public CharacterSelectorStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/batallanavalfpoe/characterSelector-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        setTitle("Batalla Naval");
+        setTitle("Batalla Naval - Seleccion de Personaje");
         setResizable(false);
         setScene(scene);
         show();
+
     }
 }
