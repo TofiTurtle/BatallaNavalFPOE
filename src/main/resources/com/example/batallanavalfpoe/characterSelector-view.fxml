@@ -18,12 +18,12 @@
             <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
          </center>
          <right>
-            <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextImage" prefHeight="140.0" prefWidth="38.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="-&gt;" BorderPane.alignment="CENTER">
+            <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextImage" prefHeight="140.0" prefWidth="38.0" style="-fx-background-color: transparent; -fx-border-width: 1.5px; -fx-border-color: black;" text="-&gt;" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets right="60.0" />
                </BorderPane.margin>
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -31,12 +31,12 @@
             </Button>
          </right>
          <left>
-            <Button fx:id="previousButton" alignment="CENTER" mnemonicParsing="false" onAction="#previousImage" prefHeight="140.0" prefWidth="38.0" style="-fx-background-color: transparent; -fx-border-color: black;" text="&lt;-" BorderPane.alignment="CENTER">
+            <Button fx:id="previousButton" alignment="CENTER" mnemonicParsing="false" onAction="#previousImage" prefHeight="140.0" prefWidth="38.0" style="-fx-background-color: transparent; -fx-border-width: 1.5px; -fx-border-color: black;" text="&lt;-" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets left="60.0" />
                </BorderPane.margin>
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -47,9 +47,9 @@
 
       <HBox alignment="CENTER" prefHeight="26.0" prefWidth="600.0">
          <children>
-            <TextField fx:id="textField" alignment="CENTER" prefHeight="26.0" prefWidth="194.0" style="-fx-background-color: transparent; -fx-border-width: 0 0 1 0; -fx-border-color: black;">
+            <TextField fx:id="textField" alignment="CENTER" prefHeight="26.0" prefWidth="194.0" style="-fx-background-color: transparent; -fx-border-width: 0 0 1.5 0; -fx-border-color: black;">
                <font>
-                  <Font size="14.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="14.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="TEXT" />
@@ -70,18 +70,18 @@
             <Insets bottom="10.0" top="20.0" />
          </VBox.margin>
          <font>
-            <Font size="14.0" />
+            <Font name="Star Jedi Logo MonoLine" size="14.0" />
          </font>
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button mnemonicParsing="false" onAction="#welcomeStage" style="-fx-background-color: transparent; -fx-border-color: black;" text="Volver al inicio">
+      <Button mnemonicParsing="false" onAction="#welcomeStage" style="-fx-background-color: transparent; -fx-border-color: black;" text="volveR al inicio">
          <VBox.margin>
             <Insets bottom="10.0" top="10.0" />
          </VBox.margin>
          <font>
-            <Font size="14.0" />
+            <Font name="Star Jedi Logo MonoLine" size="14.0" />
          </font>
          <cursor>
             <Cursor fx:constant="HAND" />

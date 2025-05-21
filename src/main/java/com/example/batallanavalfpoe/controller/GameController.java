@@ -18,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -54,6 +55,8 @@ public class GameController {
 
     @FXML
     private ImageView img;
+
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
     private GameBoard playerBoard = new GameBoard(10, 10);
     /*creamos un opponentBoard, mas abajo copiamos sus datos con el opcontroller*/
@@ -231,8 +234,7 @@ public class GameController {
 
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
         if(gridDisabled) return; //si disabled, faltan barcos, no haga nada
-
-        if(shootingTurn != true ) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
+        if(!shootingTurn) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
 
         //inicializamos variables
         int shottRow = row;
@@ -262,6 +264,7 @@ public class GameController {
         } else {
             System.out.println("MISS!!!! awwww------------------");
             shootingTurn = false; //pierde el turno
+            opponentGrid.setDisable(true); //hacemos esto para que el jugador NO SIGA TIRANDO A QUEMARROPA. falla->bloqueamos
             processMachineShot(); //llama a la maquina para que tire
         }
 
@@ -269,46 +272,42 @@ public class GameController {
 
     private void processMachineShot() {
         /*en escensia pausetransicion es una clase diseñada literal para "congelar" procesos
-        * del programa, NO los congela, da una ilusion*/
-        PauseTransition pause = new PauseTransition(Duration.millis(1500));
-        /*Setonfinish.pause dice QUE COSAS VA A EJECUTAR despues del tiempo de pausa (1500ms)
-        * lo q este dentro de esos { es lo q se va a retrasar el x tiempo*/
-        pause.setOnFinished(event -> {
-            boolean machineHit = true;
-            do {
+        del programa, NO los congela, da una ilusion
+        Setonfinish.pause dice QUE COSAS VA A EJECUTAR despues del tiempo de pausa (1500ms)
+         lo q este dentro de esos { es lo q se va a retrasar el x tiempo*/
+        shootingTurn = false;// ---> turno de la maquina
 
-                //creamos el tiro de la maquina de manera aleatoria
-                Random random = new Random();
-                int MachineshotRow = random.nextInt(10);
-                int MachineshotCol = random.nextInt(10);
+        PauseTransition thinkingPause = new PauseTransition(Duration.millis(1500));
+        thinkingPause.setOnFinished(e -> {
+            //creamos el tiro de la maquina de manera aleatoria
+            Random random = new Random();
+            int MachineshotRow = random.nextInt(10);
+            int MachineshotCol = random.nextInt(10);
 
-                //aca creamos el respectivo rectanuglo para simular el tiro de maquina
-                double width = 40;
-                double height = 40;
-                Rectangle machineShotRectangle = new Rectangle(width, height);
-                machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
+            //aca creamos el respectivo rectanuglo para simular el tiro de maquina
+            double width = 40;
+            double height = 40;
+            Rectangle machineShotRectangle = new Rectangle(width, height);
+            machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
 
-                //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
-                playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
+            //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
+            playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
 
-                //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
-                if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
-                    System.out.println("NOS DIEROOOON");
-                    machineHit = true;
-                }else {
-                    System.out.println("La maquina FALLO");
-                    machineHit = false;
-                }
-
-            }while (machineHit);
-            //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
-            shootingTurn = true;
-
+            //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
+            if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
+                System.out.println("NOS DIEROOOON");
+                processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
+            }else {
+                System.out.println("La maquina FALLO");
+                opponentGrid.setDisable(false); //si la maquina falla, volvemos a activar Ogrid pa que siga tirando
+            }
         });
-        pause.play(); //esto se pone como "activador" del evento, si esta vaina, NO se ejecuta ni mrd
+        thinkingPause.play(); //ejecutamos la vaina que quede pensando
+
+        //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
+        shootingTurn = true;
 
     }
-
 
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
         if (selectedShip == null) return;
@@ -360,7 +359,7 @@ public class GameController {
 
         /*aca recibe la direccion que se desea rotar, y dependiendo del tamaño del barco (imagename)
         se le asigna la imagen en esa direccion*/
-        
+
         String path = switch (shipDirection) {
             case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
             case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
@@ -408,7 +407,7 @@ public class GameController {
     private void copyOpponentShips() {
 
         // 2. Obtenemos los barcos guardados del OpponentController
-        List<OpponentController.PlacedShip> placedShips = OpponentController.getSavedPlacedShips();
+        List<OpponentController.Ship> placedShips = OpponentController.getSavedPlacedShips();
         if (placedShips == null) return; // Si no hay barcos, salimos
 
         //***************************************************************************
@@ -416,12 +415,12 @@ public class GameController {
         * que se tienen dos instancias del Oboard, pues con copiamos los datos para
         * trabajar bajo las mismas vueltas*/
         //Osea, esto es importante, estamos copiando los datos para usar en OponentBoard
-        for (OpponentController.PlacedShip ps : placedShips) {
+        for (OpponentController.Ship ship : placedShips) {
             opponentBoard.placeShip(
-                    ps.placement.row,
-                    ps.placement.col,
-                    ps.ship.getSize(),
-                    ps.placement.direction
+                    ship.getRow(),
+                    ship.getCol(),
+                    ship.getSize(),
+                    ship.getDirection()
             );
         }
         //*************************************************************************
@@ -430,17 +429,17 @@ public class GameController {
         double cellSize = 40;
 
         // 4. Recorremos cada barco colocado
-        for (OpponentController.PlacedShip ps : placedShips) {
+        for (OpponentController.Ship ship : placedShips) {
             double width = cellSize;
             double height = cellSize;
 
             // 5. Determinamos orientación (vertical u horizontal)
-            boolean vertical = ps.placement.direction.equals("UP") || ps.placement.direction.equals("DOWN");
+            boolean vertical = ship.getDirection().equals("UP") || ship.getDirection().equals("DOWN");
 
             if (vertical) {
-                height = ps.ship.getSize() * cellSize; // Altura ajustada para barcos verticales
+                height = ship.getSize() * cellSize; // Altura ajustada para barcos verticales
             } else {
-                width = ps.ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
+                width = ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
             }
 
             // 6. Creamos un rectángulo que representa el barco
@@ -449,19 +448,19 @@ public class GameController {
             rect.setStroke(Color.TRANSPARENT);
 
             // 7. Ajustamos orientación para LEFT y DOWN (espejo)
-            switch (ps.placement.direction) {
+            switch (ship.getDirection()) {
                 case "LEFT" -> rect.setScaleX(-1);
                 case "DOWN" -> rect.setScaleY(-1);
             }
 
             // 8. Agregamos el rectángulo en el GridPane (en la posición correcta)
-            opponentGrid.add(rect, ps.placement.col, ps.placement.row);
+            opponentGrid.add(rect, ship.getCol(), ship.getRow());
 
             // 9. Ajustamos el tamaño del barco en filas o columnas según orientación
             if (vertical) {
-                GridPane.setRowSpan(rect, ps.ship.getSize());
+                GridPane.setRowSpan(rect, ship.getSize());
             } else {
-                GridPane.setColumnSpan(rect, ps.ship.getSize());
+                GridPane.setColumnSpan(rect, ship.getSize());
             }
         }
     }
