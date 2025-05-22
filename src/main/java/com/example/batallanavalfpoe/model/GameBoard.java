@@ -13,15 +13,37 @@ public class GameBoard {
     protected Ship[][] ships; //matriz de ships que almacenaran su informacion
     public int rows;
     public int cols;
+    //nueva implementacion de matriz hits, necesaria para poder reestablecer el estado del juego
+    protected boolean[][] ShotsOnterritory;
+
+
 
     public GameBoard(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         this.occupiedCells = new boolean[rows][cols];
         this.ships = new Ship[rows][cols]; //inicializamos nuestra matriz de ships
+        this.ShotsOnterritory = new boolean[rows][cols]; //inicializamos matriz de booleans de ships
+    }
+    //mini metodo auxiliar para pillar que la matriz se creo correctamente
+    public boolean getshotsOnterritory(int row, int col) {
+        return ShotsOnterritory[row][col];
     }
 
 
+    //metodo setter para marcar los shots en el territorio nuestro
+    /*Como breve extension de explicacion de esta vuelta, vamos a hacer que asi como el usuario
+    * maneja el grid de la izquierda, una matri bool que "esta a la izq", pues entonces haremos que
+    * el maneje los tiros que se hagan en su territorio, que se marcaran contradictoriamente en
+    * el metodo proccessmachhin shot.
+    * En pocas palabras, esta matriz se llenara en el metodo del rival, pero SERA del que le disparan*/
+
+    public void setShotsOnterritory(int row, int col) {
+        ShotsOnterritory[row][col] = true;
+    }
+
+
+    //metodo para poder obtener determinado ship de la matriz
     public Ship getShip(int row, int col) {
         return this.ships[row][col];
     }
@@ -45,7 +67,6 @@ public class GameBoard {
     public void setOccupied(int row, int col) {
         occupiedCells[row][col] = true;
     }
-
     /*
     muestra las lineas del tablero, fija su tamaño, fija el tamaño de cada celda de 40x40
      */

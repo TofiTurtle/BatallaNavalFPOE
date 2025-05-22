@@ -235,7 +235,7 @@ public class GameController {
 
         playerGridContainer.requestFocus();
     }
-
+    //esto maneja los tiros del jugador en <<el machine grid>>, por eso el nombre de ese metodo
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
         if(gridDisabled) return; //si disabled, faltan barcos, no haga nada
         if(!shootingTurn) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
@@ -259,6 +259,9 @@ public class GameController {
 
         //lo mostramos en el opponent grid
         opponentGrid.add(shotRectangle, shotCol, shotRow);
+        //Y tambien, ahora copiemoslo en la matriz de tiros bool del opponenBoardo!
+        opponentBoard.setShotsOnterritory(shotRow, shotCol); //tripi
+        vermatriztiros(); //pillemos si esta bien
 
         //ahora hagamos la respectiva comprobacion de hit o miss
         if (opponentBoard.isOccupied(shotRow, shotCol)) {
@@ -308,10 +311,10 @@ public class GameController {
             machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
 
 
-
-
             //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
             playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
+            //Y por aca tambien, colocamos los disparos de la maquina en nuestra matriz de playerbord
+            playerBoard.setShotsOnterritory(MachineshotRow, MachineshotCol); //tropi
 
             //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
             if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
@@ -341,6 +344,16 @@ public class GameController {
         //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
         shootingTurn = true;
 
+    }
+    //metodo temporal para comprobar que si se genera esa webada bien
+    //listo, funciona bien en opponent y player
+    private void vermatriztiros() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.printf("%-3s ", opponentBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+            }
+            System.out.println();
+        }
     }
 
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
