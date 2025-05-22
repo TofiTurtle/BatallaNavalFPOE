@@ -341,10 +341,23 @@ public class GameController {
         }
 
         //mini funcion para darle nombre
+        String shipName;
+        switch (selectedShipSize) {
+            case 1: shipName = "fragata";
+                break;
+            case 2: shipName = "destructor";
+                break;
+            case 3: shipName = "submarino";
+                break;
+            case 4: shipName = "portaaviones";
+                break;
+            default: shipName = "default";
+                break;
+        }
 
-
+        Ship ship = new Ship(selectedShipSize, shipName, 0);
         // Colocar barco en el modelo
-        playerBoard.placeShip(startRow, startCol, selectedShipSize, shipDirection);
+        playerBoard.placeShip(startRow, startCol,ship,shipDirection);
 
 
         // Crear rectángulo visual del barco
@@ -424,7 +437,7 @@ public class GameController {
             opponentBoard.placeShip(
                     ship.getRow(),
                     ship.getCol(),
-                    ship.getSize(),
+                    ship,
                     ship.getDirection()
             );
         }

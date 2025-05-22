@@ -6,15 +6,25 @@ public class Ship {
     private int row;
     private int col;
     private String direction;
+    //nuevo atributo de hits idea smaul
+    private int hits;
 
-    public Ship(int size, String name) {
+    public Ship(int size, String name, int hits) {
         this.size = size;
         this.name = name;
+        this.hits = hits; //inicializamos hits en 0 siemrep
     }
 
     // Getters y Setters
-    public int getSize() {
+    public int getSize() { //totalmente necesario para realizar posterior comparacion con los hits
         return size;
+    }
+    //respectivo metodo ara obtener los hist
+    public int getHits() { //getter de hits
+        return hits;
+    }
+    public void registerHit(){ //para sumar hits cuando lo golpeen, es un setter
+        hits++;
     }
 
     public String getName() {

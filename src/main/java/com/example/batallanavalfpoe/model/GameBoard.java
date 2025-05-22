@@ -10,6 +10,7 @@ import java.util.Random;
 
 public class GameBoard {
     protected boolean[][] occupiedCells;
+    protected Ship[][] ships; //matriz de ships que almacenaran su informacion
     public int rows;
     public int cols;
 
@@ -17,6 +18,7 @@ public class GameBoard {
         this.rows = rows;
         this.cols = cols;
         this.occupiedCells = new boolean[rows][cols];
+        this.ships = new Ship[rows][cols]; //inicializamos nuestra matriz de ships
     }
 
     /*
@@ -99,7 +101,7 @@ public class GameBoard {
     /*
      Coloca el barco en el tablero actualizando las celdas ocupadas
      */
-    public void placeShip(int row, int col, int size, String direction) {
+    public void placeShip(int row, int col,Ship ship, String direction) {
         int dRow = 0, dCol = 0;
 
         switch (direction) {
@@ -109,10 +111,11 @@ public class GameBoard {
             case "RIGHT" -> dCol = 1;
         }
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < ship.getSize(); i++) { //podemos cambiar el size por el getsize()
             int r = row + dRow * i;
             int c = col + dCol * i;
             setOccupied(r, c);
+            ships[r][c] = ship;
         }
     }
 

@@ -44,7 +44,7 @@ public class OpponentController implements Initializable {
 
         if (savedShips != null) {
             for (Ship ship : savedShips) {
-                opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship.getSize(), ship.getDirection());
+                opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship, ship.getDirection());
             }
             renderPlacedShips(savedShips);
         } else {
@@ -54,7 +54,7 @@ public class OpponentController implements Initializable {
 
     private void addFleet(int size, String name, int count) {
         for (int i = 0; i < count; i++) {
-            fleet.add(new Ship(size, name));
+            fleet.add(new Ship(size, name,0));
         }
     }
 
@@ -72,7 +72,7 @@ public class OpponentController implements Initializable {
                 String direction = directions[random.nextInt(directions.length)];
 
                 if (opponentBoard.canPlaceShip(row, col, ship.getSize(), direction)) {
-                    opponentBoard.placeShip(row, col, ship.getSize(), direction);
+                    opponentBoard.placeShip(row, col, ship, direction);
                     ship.setPlacement(row, col, direction);
                     placedShips.add(ship);
                     placed = true;
