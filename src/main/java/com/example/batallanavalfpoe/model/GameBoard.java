@@ -21,6 +21,10 @@ public class GameBoard {
         this.ships = new Ship[rows][cols]; //inicializamos nuestra matriz de ships
     }
 
+
+    public Ship getShip(int row, int col) {
+        return this.ships[row][col];
+    }
     /*
     recibe como parametro fila y columna, si estas son menores a las del tablero devuelve true
      */

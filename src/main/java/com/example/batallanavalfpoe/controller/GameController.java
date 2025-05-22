@@ -241,11 +241,11 @@ public class GameController {
         if(!shootingTurn) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
 
         //inicializamos variables
-        int shottRow = row;
+        int shotRow = row;
         int shotCol = col;
 
         //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
-        if (!opponentBoard.isWithinBounds(shottRow, shotCol))
+        if (!opponentBoard.isWithinBounds(shotRow, shotCol))
             return;
 
         //aqui haria el playerShot(row,col) pa guardar el tiro
@@ -258,11 +258,24 @@ public class GameController {
         shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
 
         //lo mostramos en el opponent grid
-        opponentGrid.add(shotRectangle, shotCol, shottRow);
+        opponentGrid.add(shotRectangle, shotCol, shotRow);
 
         //ahora hagamos la respectiva comprobacion de hit o miss
-        if (opponentBoard.isOccupied(shottRow, shotCol)) {
-            System.out.println("SHOT!!!! siuuu++++++++++++++++++");
+        if (opponentBoard.isOccupied(shotRow, shotCol)) {
+            // 1. Obtener el barco que fue impactado
+            Ship hitShip = opponentBoard.getShip(shotRow, shotCol); // esto debes implementarlo
+
+            // 2. Registrar el impacto
+            hitShip.registerHit();
+
+            // 3. ¿Está hundido?
+            if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por el JUGADOR.");
+
+            } else {
+                System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
+            }
+
             shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
 
         } else {
@@ -302,7 +315,21 @@ public class GameController {
 
             //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
             if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
-                System.out.println("NOS DIEROOOON");
+
+                // 1. Obtener el barco que fue impactado
+                Ship hitShip = playerBoard.getShip(MachineshotRow, MachineshotCol); //se crea barco tocado con el barco de el PLAYERboard ojo vivo, es del player
+
+                // 2. Registrar el impacto
+                hitShip.registerHit();
+
+                // 3. ¿Está hundido?
+                if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                    System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por la MAQUINA.");
+
+                } else {
+                    System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " lo ha tocado la MAQUINA.");
+                }
+
                 processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
             }else {
                 System.out.println("La maquina FALLO");
