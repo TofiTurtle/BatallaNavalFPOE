@@ -6,9 +6,10 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class GameBoard {
+public class GameBoard implements Serializable {
     protected boolean[][] occupiedCells;
     protected Ship[][] ships; //matriz de ships que almacenaran su informacion
     public int rows;

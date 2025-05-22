@@ -1,6 +1,8 @@
 package com.example.batallanavalfpoe.model;
 
-public class Ship {
+import java.io.Serializable;
+
+public class Ship implements Serializable {
     private int size;
     private String name;
     private int row;
