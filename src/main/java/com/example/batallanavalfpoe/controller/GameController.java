@@ -1,6 +1,7 @@
 package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.model.Ship;
 import com.example.batallanavalfpoe.view.OpponentStage;
 import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.animation.PauseTransition;
@@ -76,6 +77,9 @@ public class GameController {
     * true para indicar disparo de usuario, y el false para disparo de maquina.*/
     private boolean shootingTurn = true; //true == le toca al player :V:V:V
     private boolean gridDisabled = true; //literal es solo un indicador extra para manejar los disparos
+
+
+
 
 
     /*
@@ -290,6 +294,9 @@ public class GameController {
             Rectangle machineShotRectangle = new Rectangle(width, height);
             machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
 
+
+
+
             //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
             playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
 
@@ -332,6 +339,9 @@ public class GameController {
         if (!playerBoard.canPlaceShip(startRow, startCol, selectedShipSize, shipDirection)) {
             return; // No se puede colocar (ocupado o fuera de límites)
         }
+
+        //mini funcion para darle nombre
+
 
         // Colocar barco en el modelo
         playerBoard.placeShip(startRow, startCol, selectedShipSize, shipDirection);
@@ -405,17 +415,12 @@ public class GameController {
     }
 
     private void copyOpponentShips() {
+        // 1. Cambiar el tipo de List<OpponentController.Ship> a List<Ship>
+        List<Ship> placedShips = OpponentController.getSavedPlacedShips();
+        if (placedShips == null) return;
 
-        // 2. Obtenemos los barcos guardados del OpponentController
-        List<OpponentController.Ship> placedShips = OpponentController.getSavedPlacedShips();
-        if (placedShips == null) return; // Si no hay barcos, salimos
-
-        //***************************************************************************
-        /*OJO VIVISIMO: este fragmento de codigo es sumamente importante, pues aqui, en vista de
-        * que se tienen dos instancias del Oboard, pues con copiamos los datos para
-        * trabajar bajo las mismas vueltas*/
-        //Osea, esto es importante, estamos copiando los datos para usar en OponentBoard
-        for (OpponentController.Ship ship : placedShips) {
+        // 2. Copiar datos al opponentBoard (modelo)
+        for (Ship ship : placedShips) {
             opponentBoard.placeShip(
                     ship.getRow(),
                     ship.getCol(),
@@ -423,40 +428,31 @@ public class GameController {
                     ship.getDirection()
             );
         }
-        //*************************************************************************
 
-        // 3. Tamaño de cada celda
+        // 3. Renderizado visual (igual que antes, pero usando Ship en lugar de OpponentController.Ship)
         double cellSize = 40;
-
-        // 4. Recorremos cada barco colocado
-        for (OpponentController.Ship ship : placedShips) {
+        for (Ship ship : placedShips) {
             double width = cellSize;
             double height = cellSize;
-
-            // 5. Determinamos orientación (vertical u horizontal)
             boolean vertical = ship.getDirection().equals("UP") || ship.getDirection().equals("DOWN");
 
             if (vertical) {
-                height = ship.getSize() * cellSize; // Altura ajustada para barcos verticales
+                height = ship.getSize() * cellSize;
             } else {
-                width = ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
+                width = ship.getSize() * cellSize;
             }
 
-            // 6. Creamos un rectángulo que representa el barco
             Rectangle rect = new Rectangle(width, height);
             rect.setFill(Color.TRANSPARENT);
             rect.setStroke(Color.TRANSPARENT);
 
-            // 7. Ajustamos orientación para LEFT y DOWN (espejo)
             switch (ship.getDirection()) {
                 case "LEFT" -> rect.setScaleX(-1);
                 case "DOWN" -> rect.setScaleY(-1);
             }
 
-            // 8. Agregamos el rectángulo en el GridPane (en la posición correcta)
             opponentGrid.add(rect, ship.getCol(), ship.getRow());
 
-            // 9. Ajustamos el tamaño del barco en filas o columnas según orientación
             if (vertical) {
                 GridPane.setRowSpan(rect, ship.getSize());
             } else {

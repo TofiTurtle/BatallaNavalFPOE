@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.model.Ship;
 
 import java.net.URL;
 import java.util.*;
@@ -23,63 +24,10 @@ public class OpponentController implements Initializable {
     private static final int BOARD_COLS = 10;
 
     private GameBoard opponentBoard;
-
     private final List<Ship> fleet = new ArrayList<>();
-
-    public GameBoard getGameBoard() {
-        return opponentBoard;
-    }
-
-    /* elimine las dos clases que habian antes (placedship y shipplacement) y pase todo a una sola clase interna q es
-    ship, las cosas q recibian los constructores de las otras clasea aqui son solo metodos q se llaman cuando se
-    necesitan y ya, pero se cumple exactamente la misma funcion
-     */
-    public class Ship {
-        private int size;
-        private String name;
-        private int row;
-        private int col;
-        private String direction;
-
-        public Ship(int size, String name) {
-            this.size = size;
-            this.name = name;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setPlacement(int row, int col, String direction) {
-            this.row = row;
-            this.col = col;
-            this.direction = direction;
-        }
-
-        public int getRow() {
-            return row;
-        }
-
-        public int getCol() {
-            return col;
-        }
-
-        public String getDirection() {
-            return direction;
-        }
-
-        @Override
-        public String toString() {
-            return "Ship{" + "size=" + size + ", name='" + name + '\'' +
-                    ", row=" + row + ", col=" + col + ", direction='" + direction + '\'' + '}';
-        }
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        /*
-        se llama a la funcion de addFleet la cual crea objetos de la clase ship
-         */
         addFleet(4, "Portaviones", 1);
         addFleet(3, "Submarino", 2);
         addFleet(2, "Destructor", 3);
@@ -88,43 +36,28 @@ public class OpponentController implements Initializable {
         opponentBoard = new GameBoard(BOARD_ROWS, BOARD_COLS);
         opponentBoard.setupGrid(opponentGrid);
 
-        /*
-        crea los rectangulos que simulan las celdas, muestras la cuadricula y define el tamaño de las celdas 40x40
-         */
         for (int row = 0; row < BOARD_ROWS; row++) {
             for (int col = 0; col < BOARD_COLS; col++) {
                 opponentGrid.add(opponentBoard.createCell(), col, row);
             }
         }
-        /* si hay barcos guardados anterirmente (savedships), los pone en el opponentboard, esto se hace para
-        q no cambien la posicion de los barcos cada vez q se abre el opponentboard q era lo q pasaba antes
-         */
+
         if (savedShips != null) {
             for (Ship ship : savedShips) {
                 opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship.getSize(), ship.getDirection());
             }
             renderPlacedShips(savedShips);
         } else {
-            savedShips = placeAllShipsRandomly(); /* si no hay nada en savedships
-                                          (la primera vez q se abre el opponentboard) se ponen alatoriamente los barcos */
+            savedShips = placeAllShipsRandomly();
         }
     }
 
-    /*
-    recibe el tamaño, el nombre y la cantidad de barcos
-    y ademas, se agregan estos barcos a la lista
-     */
     private void addFleet(int size, String name, int count) {
         for (int i = 0; i < count; i++) {
             fleet.add(new Ship(size, name));
         }
     }
 
-    /*
-    devuelve una lista de ships, hace un for el cual recorre el arreglo de barcos por cada barco y
-    realiza un while que genera numeros de columna y filas al azar, a demas se crea un arreglo con las dirreciones
-    y se llama al opponentboard con la funcion de canplace con el numero de columna y fila al azar, su tamaño y dirrecion
-     */
     private List<Ship> placeAllShipsRandomly() {
         List<Ship> placedShips = new ArrayList<>();
         Random random = new Random();
@@ -150,16 +83,10 @@ public class OpponentController implements Initializable {
         return placedShips;
     }
 
-    /*retorna los barcos guardados en la lista de ship*/
-
     public static List<Ship> getSavedPlacedShips() {
         return savedShips;
     }
 
-    /*
-    recibe como parametro el arreglo de los barcos con la fila, comlumna, dirrecion, tamaño y tipo de barco y los genera en el grid pane
-    dependiendo de esos factores
-     */
     private void renderPlacedShips(List<Ship> ships) {
         double cellSize = 40;
 
@@ -209,5 +136,9 @@ public class OpponentController implements Initializable {
                 GridPane.setColumnSpan(rect, ship.getSize());
             }
         }
+    }
+
+    public GameBoard getGameBoard() {
+        return opponentBoard;
     }
 }
