@@ -1,6 +1,8 @@
 package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.model.GameState;
+import com.example.batallanavalfpoe.model.SerializableFileHandler;
 import com.example.batallanavalfpoe.model.Ship;
 import com.example.batallanavalfpoe.view.OpponentStage;
 import com.example.batallanavalfpoe.view.WelcomeStage;
@@ -77,6 +79,13 @@ public class GameController {
     * true para indicar disparo de usuario, y el false para disparo de maquina.*/
     private boolean shootingTurn = true; //true == le toca al player :V:V:V
     private boolean gridDisabled = true; //literal es solo un indicador extra para manejar los disparos
+
+    /*Ya pa terminar,procedimiento pa guardar la partida*/
+    //instanciamos el serializable, pq el gamestate es mas abajito en un metodo nuevoo
+    private SerializableFileHandler serializableFileHandler;
+
+
+
 
 
 
@@ -210,6 +219,9 @@ public class GameController {
         se desactiva el boton de jugar asdjk
          */
         playButton.setDisable(true);
+        //serialiable siuu siu siu toilet anasdasdas
+        serializableFileHandler = new SerializableFileHandler();
+
     }
 
     /*
@@ -278,11 +290,12 @@ public class GameController {
             } else {
                 System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
             }
-
+            saveGame();
             shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
 
         } else {
             System.out.println("MISS!!!! awwww------------------");
+            saveGame();
             shootingTurn = false; //pierde el turno
             opponentGrid.setDisable(true); //hacemos esto para que el jugador NO SIGA TIRANDO A QUEMARROPA. falla->bloqueamos
             processMachineShot(); //llama a la maquina para que tire
@@ -333,10 +346,13 @@ public class GameController {
                     System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " lo ha tocado la MAQUINA.");
                 }
 
+                saveGame(); //OJO VIVITO; GUARDAMOS LA PARTIDA AQUI; DESPUES DE HACER TIRO ACERTADO
                 processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
             }else {
                 System.out.println("La maquina FALLO");
+                saveGame(); //OJO VIVITO: SE GUARDA LA PARTIDA TAMBIEN POR SI LA MACHINE FALLA
                 opponentGrid.setDisable(false); //si la maquina falla, volvemos a activar Ogrid pa que siga tirando
+
             }
         });
         thinkingPause.play(); //ejecutamos la vaina que quede pensando
@@ -554,4 +570,28 @@ public class GameController {
     private void showOpponentBoard(ActionEvent event) throws IOException {
         opponentStage.show();
     }
+
+    //Ultimo metodo de la logica, si señor, metodo para guardar la partida siuu
+    private void saveGame(){
+        //para el pleyer
+        Ship[][] playerShips = playerBoard.getShips();
+        boolean[][] playerShots = playerBoard.getShotsBoard();
+
+        //para el Machin
+        Ship[][] machineShips = opponentBoard.getShips();
+        boolean[][] machineShots = opponentBoard.getShotsBoard();
+
+        //ahora si, creamos el objeto gamestate, pues ya tenemos listos sus atributicos
+        GameState gameState = new GameState(playerShips, playerShots, machineShips, machineShots);
+
+        //por ultimito, sencillamente le pasamos nuestro estado del juego al papuserializador
+        serializableFileHandler.serialize("game_data.ser", gameState);
+
+        System.out.println("Si se guardo manito, calma! :)))");
+
+        /*Esta vaina tecnicamnte si queremos lo podriamos hacer con un boton, yo quiero
+        * que sea un salvado automatico, entonces lo colocamos despues de realizar cada shoto*/
+    }
+
+
 }

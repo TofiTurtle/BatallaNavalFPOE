@@ -48,6 +48,15 @@ public class GameBoard implements Serializable {
     public Ship getShip(int row, int col) {
         return this.ships[row][col];
     }
+
+    //metodo para devolver el tablero de mis chips
+    public Ship[][] getShips() {
+        return ships;
+    }
+    //yy metodo para devolver tablero de shots
+    public boolean[][] getShotsBoard() {
+        return ShotsOnterritory;
+    }
     /*
     recibe como parametro fila y columna, si estas son menores a las del tablero devuelve true
      */

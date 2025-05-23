@@ -2,6 +2,7 @@ package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.model.PlainTextFileHandler;
 import com.example.batallanavalfpoe.model.Player;
+import com.example.batallanavalfpoe.model.SerializableFileHandler;
 import com.example.batallanavalfpoe.view.CharacterSelectorStage;
 import com.example.batallanavalfpoe.view.GameStage;
 import com.example.batallanavalfpoe.view.RulesStage;
@@ -18,11 +19,11 @@ import java.io.IOException;
 
 public class WelcomeController {
     Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
-
-
     //Atributo de la clase WelcomeController
     //necesitamos tener el plaintexthandler
     PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();
+    //instanciamos el serializador
+    private SerializableFileHandler serializableFileHandler = new SerializableFileHandler();
 
 
 
