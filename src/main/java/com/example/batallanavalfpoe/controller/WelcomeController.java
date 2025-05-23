@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameState;
 import com.example.batallanavalfpoe.model.PlainTextFileHandler;
 import com.example.batallanavalfpoe.model.Player;
 import com.example.batallanavalfpoe.model.SerializableFileHandler;
@@ -56,8 +57,11 @@ public class WelcomeController {
         System.out.println(playerName + "  ,  " + characterImagePath);
 
         //aca nos "metemos" en la partida
-        //(ojo vivo, sin serializable esto es nada mas disimular q se guarda asjdkasd)
-        GameStage gameStage =  new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)), playerName);
+        //implementando lo del serializable
+        //esto es "castear" xd? no se, creamos una instancia de gamestate que copie el objeto serializado que teniamos guardao
+        GameState gameState = (GameState) serializableFileHandler.deserialize("game_data.ser"); //deserializamos
+        //vitalToken vale 1 para diferenciar el metodo del controller, indicando que esta en una partida ya comenzada
+        GameStage gameStage =  new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)), playerName, gameState, 1);
         gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

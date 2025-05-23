@@ -49,13 +49,26 @@ public class GameBoard implements Serializable {
         return this.ships[row][col];
     }
 
-    //metodo para devolver el tablero de mis chips
+    /*POR CUESTIONES DE LOGICA, NECESITAMOS COPIAR LAS 3 MATRICES, LA DE GOLPES, LA DE
+    * SHIPS Y LA DE BOOLEANOS CON LAS POSICIONES, ESTO DEBIDO A QUE, PUES, SHIPS DA INFORMACION VALIOSA
+    * Y CON HITS ESTARIAMOS TRIN, PERO NO OLVIDAR QUE MUCHA LOGICA DEL CNTROLLER USA EL OCCUPIEDCELLS,
+    * POR LO QUE ES VITAL COPIAR ESTE*/
     public Ship[][] getShips() {
         return ships;
     }
-    //yy metodo para devolver tablero de shots
     public boolean[][] getShotsBoard() {
         return ShotsOnterritory;
+    }
+    public boolean[][] getOccupiedCells() {
+        return occupiedCells;
+    }
+
+    /*Finalmente, metamosle sabroso con un mismo metodo setter para restaurar datos de una partida siuu*/
+    public void restoreBoard(Ship[][] ships, boolean[][] ShotsOnterritory, boolean[][] occupiedCells) {
+        /*con este metodo, basicamente copiamos todou en una misma llamada, nos ahorramos 3 setter */
+        this.ships = ships;
+        this.ShotsOnterritory = ShotsOnterritory;
+        this.occupiedCells = occupiedCells;
     }
     /*
     recibe como parametro fila y columna, si estas son menores a las del tablero devuelve true
