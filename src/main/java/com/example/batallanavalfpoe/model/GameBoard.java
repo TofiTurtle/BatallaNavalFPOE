@@ -18,7 +18,6 @@ public class GameBoard implements Serializable {
     protected boolean[][] ShotsOnterritory;
 
 
-
     public GameBoard(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;

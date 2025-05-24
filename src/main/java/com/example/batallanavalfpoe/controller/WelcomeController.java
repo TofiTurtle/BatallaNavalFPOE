@@ -19,14 +19,13 @@ import java.io.IOException;
 
 
 public class WelcomeController {
-    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
     //Atributo de la clase WelcomeController
     //necesitamos tener el plaintexthandler
     PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();
     //instanciamos el serializador
     private SerializableFileHandler serializableFileHandler = new SerializableFileHandler();
 
-
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
     //juan: Esta clase tendra 3 buttons, es una bobada pero por orden voy a modificar el
     /*nombre de un boton, y tambien para seguir mejor el MVc voy a cmabiar como se cargan

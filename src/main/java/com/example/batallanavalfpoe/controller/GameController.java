@@ -29,49 +29,28 @@ import java.io.IOException;
 import java.util.*;
 
 public class GameController {
-    @FXML
-    private StackPane playerGridContainer;
-
-    @FXML
-    private StackPane mainGridContainer;
-
-    @FXML
-    private VBox fleetVBox;
-
-    @FXML
-    private GridPane playerGrid;
-    @FXML
-    private GridPane opponentGrid;
-
-    @FXML
-    private Label nameLabel;
-
-    @FXML
-    private Button playButton;
-
-    @FXML
-    private HBox buttonsHBox;
-
-    @FXML
-    private Button opponentButton;
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
+    @FXML private StackPane playerGridContainer;
+    @FXML private StackPane mainGridContainer;
+    @FXML private VBox fleetVBox;
+    @FXML private GridPane playerGrid;
+    @FXML private GridPane opponentGrid;
+    @FXML private Label nameLabel;
+    @FXML private Button playButton;
+    @FXML private HBox buttonsHBox;
+    @FXML private Button opponentButton;
+    @FXML private ImageView img;
+    private GameBoard playerBoard = new GameBoard(10, 10);
     private OpponentStage opponentStage;
 
-    @FXML
-    private ImageView img;
-
-    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
-
-    private GameBoard playerBoard = new GameBoard(10, 10);
     /*creamos un opponentBoard, mas abajo copiamos sus datos con el opcontroller*/
     private GameBoard opponentBoard = new GameBoard(10, 10);
 
     private String shipDirection = "RIGHT"; // Dirección por defecto
-
     private Rectangle selectedShip = null;
     private int selectedShipSize = 0;
     private Map<Rectangle, Integer> shipSizeMap = new HashMap<>();
     private Map<Rectangle, ImagePattern> shipImageMap = new HashMap<>();
-
     private Image pendingCharacterImage;
 
     /*se crea una variable boolean que reresentara los turnos de disparo, siendo el
@@ -86,34 +65,11 @@ public class GameController {
     //creamos una variable que copie la version del juego a jugar para condicionar el initialize
     private GameState gameState;
 
-    /*OJO VIVO; nuevo metodo necesario para que el programa vea y entienda que version se jugara
-     * si se juega una version ya iniciada, o si una nueva partida, para esto necesitaremos un metodo extras*/
-    /*public void gameVersion(GameState gameState) {
-        if (gameState == null)
-        {
-            System.out.println("ESTA JUGANDO DESDE 0-----------------");
-
-        }else{
-            System.out.println("ESTA JUGANDO UNA PARTIDA YA INICIADA++++++++++++");
-            System.out.println("OJO VIVO JUGANDO UNA PARTIDA YA INICIADA");
-            playerBoard.restoreBoard(gameState.getPlayerShips(), gameState.getPlayerShots(), gameState.getOccupiedPlayerCells());
-            opponentBoard.restoreBoard(gameState.getMachineShips(), gameState.getMachineShots(), gameState.getOccupiedMachineCells());
-
-            //SUPUESTAMENTE Y SI SI SE GUARDO LA PARTIDA, AHORA SI IMPRIMO EL GAMEBOARD, ME DEBERIA DE MOSTRAR UNA VAINA ACORDE
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
-                }
-                System.out.println();
-            }
-        }
-    }*/
 
     //a nuestro atributo gamestate le copiamos el objeto con los datos
     public void getGameState(GameState gameState){
         this.gameState = gameState;
     }
-
 
     /*
     Esta funcion recibe como parametro una imagen y l apone en el imageView
@@ -135,6 +91,14 @@ public class GameController {
 
     @FXML
     private void initialize() {
+        playerGrid = new GridPane();
+        playerGridContainer.getChildren().add(playerGrid);
+        playerBoard.setupGrid(playerGrid);
+
+        opponentGrid = new GridPane();
+        mainGridContainer.getChildren().add(opponentGrid);
+        opponentBoard.setupGrid(opponentGrid);
+
         Platform.runLater(() -> {
         if (gameState == null) {
             System.out.println("ESTA JUGANDO DESDE 0-----------------");
@@ -151,7 +115,7 @@ public class GameController {
 
     private void loadSavedGame() {
         /* NO COMENTEN ESTOS METODOS POR QUE ES LO MISMO QUE ESTAMOS HACIENDO EN SETUPNEWGAME
-        Y DEJEN DE PONER COMENTARIOS INNECESARIOS PORQUE SINO YA NO VOY A PODER CORRER EL JUEGO, GRACIAS*/
+        NO PONGAN COMENTARIOS INNECESARIOS PORQUE SINO YA NO VOY A PODER CORRER EL JUEGO*/
 
         playerBoard.restoreBoard(
                 gameState.getPlayerShips(),
@@ -183,15 +147,6 @@ public class GameController {
         crear los barcos de una
          */
         opponentStage = new OpponentStage();
-
-        // Se crean 2 gridPanes de manera dinamica
-        playerGrid = new GridPane();
-        playerGridContainer.getChildren().add(playerGrid);
-        playerBoard.setupGrid(playerGrid);
-
-        opponentGrid = new GridPane();
-        mainGridContainer.getChildren().add(opponentGrid);
-        opponentBoard.setupGrid(opponentGrid);
 
         /*
         Se desactiva el gridpane del oponente mientras y tambien desactiva el boton que muestra el stage donde
@@ -428,7 +383,7 @@ public class GameController {
         System.out.println("\n📍 MATRIZ DE TIROS DEL OPONENTE SOBRE EL JUGADOR:");
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+                System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j));
             }
             System.out.println();
         }
@@ -436,7 +391,7 @@ public class GameController {
         System.out.println("\n🚢 UBICACION DE BARCOS DEL JUGADOR:");
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", playerBoard.getOccupiedCellsPlayer(i,j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+                System.out.printf("%-3s ", playerBoard.getOccupiedCellsPlayer(i,j));
             }
             System.out.println();
         }
@@ -444,7 +399,7 @@ public class GameController {
         System.out.println("\n🚢 UBICACION DE BARCOS DEL OPONENTE:");
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", opponentBoard.getOccupiedCellsPlayer(i,j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+                System.out.printf("%-3s ", opponentBoard.getOccupiedCellsPlayer(i,j));
             }
             System.out.println();
         }
