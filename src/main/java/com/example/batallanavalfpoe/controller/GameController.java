@@ -1,6 +1,9 @@
 package com.example.batallanavalfpoe.controller;
 
 import com.example.batallanavalfpoe.model.GameBoard;
+import com.example.batallanavalfpoe.model.GameState;
+import com.example.batallanavalfpoe.model.SerializableFileHandler;
+import com.example.batallanavalfpoe.model.Ship;
 import com.example.batallanavalfpoe.view.OpponentStage;
 import com.example.batallanavalfpoe.view.WelcomeStage;
 import javafx.animation.PauseTransition;
@@ -18,6 +21,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -55,10 +59,11 @@ public class GameController {
     @FXML
     private ImageView img;
 
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
+
     private GameBoard playerBoard = new GameBoard(10, 10);
     /*creamos un opponentBoard, mas abajo copiamos sus datos con el opcontroller*/
     private GameBoard opponentBoard = new GameBoard(10, 10);
-
 
     private String shipDirection = "RIGHT"; // Dirección por defecto
 
@@ -73,6 +78,41 @@ public class GameController {
     * true para indicar disparo de usuario, y el false para disparo de maquina.*/
     private boolean shootingTurn = true; //true == le toca al player :V:V:V
     private boolean gridDisabled = true; //literal es solo un indicador extra para manejar los disparos
+
+    /*Ya pa terminar,procedimiento pa guardar la partida*/
+    //instanciamos el serializable, pq el gamestate es mas abajito en un metodo nuevoo
+    private SerializableFileHandler serializableFileHandler;
+
+    //creamos una variable que copie la version del juego a jugar para condicionar el initialize
+    private GameState gameState;
+
+    /*OJO VIVO; nuevo metodo necesario para que el programa vea y entienda que version se jugara
+     * si se juega una version ya iniciada, o si una nueva partida, para esto necesitaremos un metodo extras*/
+    /*public void gameVersion(GameState gameState) {
+        if (gameState == null)
+        {
+            System.out.println("ESTA JUGANDO DESDE 0-----------------");
+
+        }else{
+            System.out.println("ESTA JUGANDO UNA PARTIDA YA INICIADA++++++++++++");
+            System.out.println("OJO VIVO JUGANDO UNA PARTIDA YA INICIADA");
+            playerBoard.restoreBoard(gameState.getPlayerShips(), gameState.getPlayerShots(), gameState.getOccupiedPlayerCells());
+            opponentBoard.restoreBoard(gameState.getMachineShips(), gameState.getMachineShots(), gameState.getOccupiedMachineCells());
+
+            //SUPUESTAMENTE Y SI SI SE GUARDO LA PARTIDA, AHORA SI IMPRIMO EL GAMEBOARD, ME DEBERIA DE MOSTRAR UNA VAINA ACORDE
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+                }
+                System.out.println();
+            }
+        }
+    }*/
+
+    //a nuestro atributo gamestate le copiamos el objeto con los datos
+    public void getGameState(GameState gameState){
+        this.gameState = gameState;
+    }
 
 
     /*
@@ -95,6 +135,47 @@ public class GameController {
 
     @FXML
     private void initialize() {
+        Platform.runLater(() -> {
+        if (gameState == null) {
+            System.out.println("ESTA JUGANDO DESDE 0-----------------");
+            setupNewGame();
+        } else {
+            System.out.println("ESTA JUGANDO UNA PARTIDA YA INICIADA++++++++++++");
+            loadSavedGame();
+        }
+        });
+
+        //serialiable siuu siu siu toilet anasdasdas
+        serializableFileHandler = new SerializableFileHandler();
+    }
+
+    private void loadSavedGame() {
+        /* NO COMENTEN ESTOS METODOS POR QUE ES LO MISMO QUE ESTAMOS HACIENDO EN SETUPNEWGAME
+        Y DEJEN DE PONER COMENTARIOS INNECESARIOS PORQUE SINO YA NO VOY A PODER CORRER EL JUEGO, GRACIAS*/
+
+        playerBoard.restoreBoard(
+                gameState.getPlayerShips(),
+                gameState.getPlayerShots(),
+                gameState.getOccupiedPlayerCells()
+        );
+
+        opponentBoard.restoreBoard(
+                gameState.getMachineShips(),
+                gameState.getMachineShots(),
+                gameState.getOccupiedMachineCells()
+        );
+
+        /* ya confirme que todo se esta guardando (modifique temporalmente vermatriztiros para que muestre en
+        consola los tiros de la maquina, del oponente, y la ubicacion de los barcos de la maquina y del oponente)
+        SIN EMBARGO, al darle en continuar no se muestra nada, porque en este metodo aun no se le asigna ni la imagen
+        a los rectangulos ni se han generado los gridpanes como se hace en setupnewgame, por eso es como si
+        estuvieramos mostrando solo lo que hay en el fxml, el punto es que SI se estan guardadno las cosas solo q
+        pues toca poner eso que esta guardado en restoreboard visualmente
+         */
+        vermatriztiros();
+    }
+
+    private void setupNewGame() {
         /*
         Se crea un opponent stage debido a como valeria crea los barcos del oponente,
         ella los crea en un stage totalmente diferente al gridpane del oponente (el principal)
@@ -103,16 +184,14 @@ public class GameController {
          */
         opponentStage = new OpponentStage();
 
-        /*
-        Se crean 2 gridPanes de manera dinamica
-         */
+        // Se crean 2 gridPanes de manera dinamica
         playerGrid = new GridPane();
         playerGridContainer.getChildren().add(playerGrid);
-        playerBoard.setupGrid(playerGrid); //esta vaina crea el gridpain de la izq
+        playerBoard.setupGrid(playerGrid);
 
         opponentGrid = new GridPane();
         mainGridContainer.getChildren().add(opponentGrid);
-        opponentBoard.setupGrid(opponentGrid); //esta vaina crea el gridpain de la derec
+        opponentBoard.setupGrid(opponentGrid);
 
         /*
         Se desactiva el gridpane del oponente mientras y tambien desactiva el boton que muestra el stage donde
@@ -133,7 +212,7 @@ public class GameController {
 
          /*
          Aqui puede parece confunso por como se declaran las variables pero simplemente se estan creando rectangulos
-         (no son cells como tal) se le puso el nombre de cells ya que simula una celda del tablero, pero en escencia
+         se le puso el nombre de cells ya que simula una celda del tablero, pero en escencia
          es un rectangulo dentro de cada gridpane, a demas se le asigna un evento de clic
          */
         for (int row = 0; row < 10; row++) {
@@ -146,30 +225,26 @@ public class GameController {
             }
         }
 
-        /*
-        puede parece confunso este for(como se declara) pero es mas sencillo de lo que parece, para eso tenemos que
-        retomar la idea de que los nodos son elemtos visuales, entonces que hacemos aca, aca recorremos el vbox donde
+         /*
+        tenemos que retomar la idea de que los nodos son elemtos visuales, entonces que hacemos aca, aca recorremos el vbox donde
         se encuentran los rectangulos, o sea, lo que dice la linea del for es: por cada nodo (elemento visual) que se encuentre
         en el fleetvbox se va poner la imagen y aparte se pone un evento de clic al rectangulo (el evento de selected)
          */
-        // Inicializar flota y mapas
-
         for (Node child : fleetVBox.getChildren()) {
             if (child instanceof Rectangle rect) { //aqui se pregunta si el nodo que se encuentra en el fleetvbox es un rectangulo y se guarda ese rectangulo en una variable
                 int size = (int) (rect.getWidth() / 40); //se divide el largo del rectangulo entre 40 (debido a que ese es el tamaño de cada lado de una celda)
-                shipSizeMap.put(rect, size);//se guarda el rectangulo y el numero que me dio la division
+                shipSizeMap.put(rect, size); //se guarda el rectangulo y el numero que me dio la division
 
                 //dependiendo del numero de la division se asigna una imagen
                 ImagePattern pattern = switch (size) {
-                    case 1 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/frigate_right.png"))));
-                    case 2 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destroyer_right.png"))));
-                    case 3 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarine_right.png"))));
-                    case 4 -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/carrier_right.png"))));
-                    default -> new ImagePattern(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/default_right.png"))));
+                    case 1 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/frigate_right.png")));
+                    case 2 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/destroyer_right.png")));
+                    case 3 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/submarine_right.png")));
+                    case 4 -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/carrier_right.png")));
+                    default -> new ImagePattern(new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/default_right.png")));
                 };
 
                 rect.setFill(pattern);
-                //se guarda el rectangulo y su imagen correspondiente
                 shipImageMap.put(rect, pattern);
 
                 rect.setOnMouseClicked(event -> selectShip(rect));
@@ -180,7 +255,6 @@ public class GameController {
         Aqui se le pone de evento al stack pane (recordar que este contiene: el gridpane, el rectangulo que simula la celda,
         el barco) y se asigna a un string la dirrecion dependiendo de la tecla que undiste
          */
-        // Evento teclado para cambiar dirección
         playerGridContainer.setOnKeyPressed(event -> {
             if (selectedShip == null) return;
             switch (event.getCode()) {
@@ -199,9 +273,6 @@ public class GameController {
             playerGridContainer.setFocusTraversable(true);
         });
 
-        /*
-        se desactiva el boton de jugar asdjk
-         */
         playButton.setDisable(true);
     }
 
@@ -229,16 +300,17 @@ public class GameController {
         playerGridContainer.requestFocus();
     }
 
+    //esto maneja los tiros del jugador en <<el machine grid>>, por eso el nombre de ese metodo
     private void handleMachineGridClick(MouseEvent event, int row, int col) {
         if(gridDisabled) return; //si disabled, faltan barcos, no haga nada
         if(!shootingTurn) return; //si no tiene el turno, salga (aunque esto nunca ejecuta tecnicamente)
 
         //inicializamos variables
-        int shottRow = row;
+        int shotRow = row;
         int shotCol = col;
 
         //Valida ahi breve que el tiro que se quiere hacer SI este en la grilla, sino se cancela
-        if (!opponentBoard.isWithinBounds(shottRow, shotCol))
+        if (!opponentBoard.isWithinBounds(shotRow, shotCol))
             return;
 
         //aqui haria el playerShot(row,col) pa guardar el tiro
@@ -251,15 +323,32 @@ public class GameController {
         shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
 
         //lo mostramos en el opponent grid
-        opponentGrid.add(shotRectangle, shotCol, shottRow);
+        opponentGrid.add(shotRectangle, shotCol, shotRow);
+        //Y tambien, ahora copiemoslo en la matriz de tiros bool del opponenBoardo!
+        opponentBoard.setShotsOnterritory(shotRow, shotCol); //tripi
+        vermatriztiros(); //pillemos si esta bien
 
         //ahora hagamos la respectiva comprobacion de hit o miss
-        if (opponentBoard.isOccupied(shottRow, shotCol)) {
-            System.out.println("SHOT!!!! siuuu++++++++++++++++++");
+        if (opponentBoard.isOccupied(shotRow, shotCol)) {
+            // 1. Obtener el barco que fue impactado
+            Ship hitShip = opponentBoard.getShip(shotRow, shotCol); // esto debes implementarlo
+
+            // 2. Registrar el impacto
+            hitShip.registerHit();
+
+            // 3. ¿Está hundido?
+            if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por el JUGADOR.");
+
+            } else {
+                System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
+            }
+            saveGame();
             shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
 
         } else {
             System.out.println("MISS!!!! awwww------------------");
+            saveGame();
             shootingTurn = false; //pierde el turno
             opponentGrid.setDisable(true); //hacemos esto para que el jugador NO SIGA TIRANDO A QUEMARROPA. falla->bloqueamos
             processMachineShot(); //llama a la maquina para que tire
@@ -287,16 +376,36 @@ public class GameController {
             Rectangle machineShotRectangle = new Rectangle(width, height);
             machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
 
+
             //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
             playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
+            //Y por aca tambien, colocamos los disparos de la maquina en nuestra matriz de playerbord
+            playerBoard.setShotsOnterritory(MachineshotRow, MachineshotCol); //tropi
 
             //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
             if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
-                System.out.println("NOS DIEROOOON");
+
+                // 1. Obtener el barco que fue impactado
+                Ship hitShip = playerBoard.getShip(MachineshotRow, MachineshotCol); //se crea barco tocado con el barco de el PLAYERboard ojo vivo, es del player
+
+                // 2. Registrar el impacto
+                hitShip.registerHit();
+
+                // 3. ¿Está hundido?
+                if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                    System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por la MAQUINA.");
+
+                } else {
+                    System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " lo ha tocado la MAQUINA.");
+                }
+
+                saveGame(); //OJO VIVITO; GUARDAMOS LA PARTIDA AQUI; DESPUES DE HACER TIRO ACERTADO
                 processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
             }else {
                 System.out.println("La maquina FALLO");
+                saveGame(); //OJO VIVITO: SE GUARDA LA PARTIDA TAMBIEN POR SI LA MACHINE FALLA
                 opponentGrid.setDisable(false); //si la maquina falla, volvemos a activar Ogrid pa que siga tirando
+
             }
         });
         thinkingPause.play(); //ejecutamos la vaina que quede pensando
@@ -304,6 +413,41 @@ public class GameController {
         //si sale del dowhhile es que fallo, entonces si fallo se le devuelve el turno a player
         shootingTurn = true;
 
+    }
+    //metodo temporal para comprobar que si se genera esa webada bien
+    //listo, funciona bien en opponent y player
+    private void vermatriztiros() {
+        System.out.println("\n📍 MATRIZ DE TIROS DEL JUGADOR SOBRE EL OPONENTE:");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.printf("%-3s ", opponentBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n📍 MATRIZ DE TIROS DEL OPONENTE SOBRE EL JUGADOR:");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n🚢 UBICACION DE BARCOS DEL JUGADOR:");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.printf("%-3s ", playerBoard.getOccupiedCellsPlayer(i,j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n🚢 UBICACION DE BARCOS DEL OPONENTE:");
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.printf("%-3s ", opponentBoard.getOccupiedCellsPlayer(i,j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
+            }
+            System.out.println();
+        }
     }
 
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
@@ -330,8 +474,24 @@ public class GameController {
             return; // No se puede colocar (ocupado o fuera de límites)
         }
 
+        //mini funcion para darle nombre
+        String shipName;
+        switch (selectedShipSize) {
+            case 1: shipName = "fragata";
+                break;
+            case 2: shipName = "destructor";
+                break;
+            case 3: shipName = "submarino";
+                break;
+            case 4: shipName = "portaaviones";
+                break;
+            default: shipName = "default";
+                break;
+        }
+
+        Ship ship = new Ship(selectedShipSize, shipName, 0);
         // Colocar barco en el modelo
-        playerBoard.placeShip(startRow, startCol, selectedShipSize, shipDirection);
+        playerBoard.placeShip(startRow, startCol,ship,shipDirection);
 
 
         // Crear rectángulo visual del barco
@@ -402,58 +562,44 @@ public class GameController {
     }
 
     private void copyOpponentShips() {
+        // 1. Cambiar el tipo de List<OpponentController.Ship> a List<Ship>
+        List<Ship> placedShips = OpponentController.getSavedPlacedShips();
+        if (placedShips == null) return;
 
-        // 2. Obtenemos los barcos guardados del OpponentController
-        List<OpponentController.Ship> placedShips = OpponentController.getSavedPlacedShips();
-        if (placedShips == null) return; // Si no hay barcos, salimos
-
-        //***************************************************************************
-        /*OJO VIVISIMO: este fragmento de codigo es sumamente importante, pues aqui, en vista de
-        * que se tienen dos instancias del Oboard, pues con copiamos los datos para
-        * trabajar bajo las mismas vueltas*/
-        //Osea, esto es importante, estamos copiando los datos para usar en OponentBoard
-        for (OpponentController.Ship ship : placedShips) {
+        // 2. Copiar datos al opponentBoard (modelo)
+        for (Ship ship : placedShips) {
             opponentBoard.placeShip(
                     ship.getRow(),
                     ship.getCol(),
-                    ship.getSize(),
+                    ship,
                     ship.getDirection()
             );
         }
-        //*************************************************************************
 
-        // 3. Tamaño de cada celda
+        // 3. Renderizado visual (igual que antes, pero usando Ship en lugar de OpponentController.Ship)
         double cellSize = 40;
-
-        // 4. Recorremos cada barco colocado
-        for (OpponentController.Ship ship : placedShips) {
+        for (Ship ship : placedShips) {
             double width = cellSize;
             double height = cellSize;
-
-            // 5. Determinamos orientación (vertical u horizontal)
             boolean vertical = ship.getDirection().equals("UP") || ship.getDirection().equals("DOWN");
 
             if (vertical) {
-                height = ship.getSize() * cellSize; // Altura ajustada para barcos verticales
+                height = ship.getSize() * cellSize;
             } else {
-                width = ship.getSize() * cellSize;  // Ancho ajustado para barcos horizontales
+                width = ship.getSize() * cellSize;
             }
 
-            // 6. Creamos un rectángulo que representa el barco
             Rectangle rect = new Rectangle(width, height);
             rect.setFill(Color.TRANSPARENT);
             rect.setStroke(Color.TRANSPARENT);
 
-            // 7. Ajustamos orientación para LEFT y DOWN (espejo)
             switch (ship.getDirection()) {
                 case "LEFT" -> rect.setScaleX(-1);
                 case "DOWN" -> rect.setScaleY(-1);
             }
 
-            // 8. Agregamos el rectángulo en el GridPane (en la posición correcta)
             opponentGrid.add(rect, ship.getCol(), ship.getRow());
 
-            // 9. Ajustamos el tamaño del barco en filas o columnas según orientación
             if (vertical) {
                 GridPane.setRowSpan(rect, ship.getSize());
             } else {
@@ -501,5 +647,29 @@ public class GameController {
     @FXML
     private void showOpponentBoard(ActionEvent event) throws IOException {
         opponentStage.show();
+    }
+
+    //Ultimo metodo de la logica, si señor, metodo para guardar la partida siuu
+    private void saveGame(){
+        //para el pleyer
+        Ship[][] playerShips = playerBoard.getShips();
+        boolean[][] playerShots = playerBoard.getShotsBoard();
+        boolean[][] occupiedPlayerCells = playerBoard.getOccupiedCells();
+
+        //para el Machin
+        Ship[][] machineShips = opponentBoard.getShips();
+        boolean[][] machineShots = opponentBoard.getShotsBoard();
+        boolean[][] occupiedMachineCells = opponentBoard.getOccupiedCells();
+
+        //ahora si, creamos el objeto gamestate, pues ya tenemos listos sus atributicos
+        GameState gameState = new GameState(playerShips, playerShots,occupiedPlayerCells, machineShips, machineShots,occupiedMachineCells);
+
+        //por ultimito, sencillamente le pasamos nuestro estado del juego al papuserializador
+        serializableFileHandler.serialize("game_data.ser", gameState);
+
+        System.out.println("Si se guardo manito, calma! :)))");
+
+        /*Esta vaina tecnicamnte si queremos lo podriamos hacer con un boton, yo quiero
+        * que sea un salvado automatico, entonces lo colocamos despues de realizar cada shoto*/
     }
 }

@@ -1,25 +1,30 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameState;
 import com.example.batallanavalfpoe.model.PlainTextFileHandler;
 import com.example.batallanavalfpoe.model.Player;
+import com.example.batallanavalfpoe.model.SerializableFileHandler;
 import com.example.batallanavalfpoe.view.CharacterSelectorStage;
 import com.example.batallanavalfpoe.view.GameStage;
 import com.example.batallanavalfpoe.view.RulesStage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
 public class WelcomeController {
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
     //Atributo de la clase WelcomeController
     //necesitamos tener el plaintexthandler
     PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();
+    //instanciamos el serializador
+    private SerializableFileHandler serializableFileHandler = new SerializableFileHandler();
 
 
 
@@ -52,16 +57,17 @@ public class WelcomeController {
         System.out.println(playerName + "  ,  " + characterImagePath);
 
         //aca nos "metemos" en la partida
-        //(ojo vivo, sin serializable esto es nada mas disimular q se guarda asjdkasd)
-        GameStage gameStage =  new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)), playerName);
+        //implementando lo del serializable
+        //esto es "castear" xd? no se, creamos una instancia de gamestate que copie el objeto serializado que teniamos guardao
+        GameState gameState = (GameState) serializableFileHandler.deserialize("game_data.ser"); //deserializamos
+        //vitalToken vale 1 para diferenciar el metodo del controller, indicando que esta en una partida ya comenzada
+        GameStage gameStage =  new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)), playerName, gameState, 1);
         gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
 
     }
-
-
 
     //Button "Reglas"
     @FXML

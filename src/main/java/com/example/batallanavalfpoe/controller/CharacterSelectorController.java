@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameState;
 import com.example.batallanavalfpoe.model.PlainTextFileHandler;
 import com.example.batallanavalfpoe.model.Player;
 import com.example.batallanavalfpoe.view.GameStage;
@@ -15,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -32,6 +34,7 @@ public class CharacterSelectorController {
 
     private List<Image> images;
     private int currentIndex = 2;
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
     /*creo este arreglo pq necesito tener como tal los STRING de los path de imagenes, y ps
     la lista de abajo la unica manera en la que m lo devuelve es en Image. tonces no sirve
@@ -129,7 +132,12 @@ public class CharacterSelectorController {
         plainTextFileHandler.writeToFile("player_data.csv", content);
 
         //se instancia geimstage y le pasamos por parametros la imaen y nombre
-        GameStage gameStage = new GameStage(images.get(currentIndex), name);
+        /*como tenemos la estructura del gamestage, necesitamos pasarle un gamestate
+        * en este caso, es una partida nueva, por lo que sencillamente le pasaremos un
+        * objeto vacio, igual no importa, esto se decidde en un condicional en el controller mas adelantic*/
+        GameState gameState = null;
+        //vitalToken aca valdria 1, para indicar que se juega el juego desde 0.
+        GameStage gameStage = new GameStage(images.get(currentIndex), name, gameState, 0);
         gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
