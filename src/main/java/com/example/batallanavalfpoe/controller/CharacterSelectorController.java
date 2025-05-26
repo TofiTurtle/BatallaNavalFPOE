@@ -1,5 +1,6 @@
 package com.example.batallanavalfpoe.controller;
 
+import com.example.batallanavalfpoe.model.GameState;
 import com.example.batallanavalfpoe.model.PlainTextFileHandler;
 import com.example.batallanavalfpoe.model.Player;
 import com.example.batallanavalfpoe.view.GameStage;
@@ -131,7 +132,12 @@ public class CharacterSelectorController {
         plainTextFileHandler.writeToFile("player_data.csv", content);
 
         //se instancia geimstage y le pasamos por parametros la imaen y nombre
-        GameStage gameStage = new GameStage(images.get(currentIndex), name);
+        /*como tenemos la estructura del gamestage, necesitamos pasarle un gamestate
+        * en este caso, es una partida nueva, por lo que sencillamente le pasaremos un
+        * objeto vacio, igual no importa, esto se decidde en un condicional en el controller mas adelantic*/
+        GameState gameState = null;
+        //vitalToken aca valdria 1, para indicar que se juega el juego desde 0.
+        GameStage gameStage = new GameStage(images.get(currentIndex), name, gameState, 0);
         gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
