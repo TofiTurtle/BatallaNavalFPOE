@@ -21,8 +21,7 @@ public class GameStage extends Stage {
         GameController gameController = fxmlLoader.getController();
         gameController.setCharacterImage(CurrentImage);
         gameController.setNameLabel(CurrentName);
-        gameController.gameVersion(gameState);
-
+        gameController.getGameState(gameState);
 
         setTitle("Batalla Naval - Partida");
         setResizable(false);

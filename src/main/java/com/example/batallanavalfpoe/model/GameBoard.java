@@ -18,7 +18,6 @@ public class GameBoard implements Serializable {
     protected boolean[][] ShotsOnterritory;
 
 
-
     public GameBoard(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
@@ -29,6 +28,11 @@ public class GameBoard implements Serializable {
     //mini metodo auxiliar para pillar que la matriz se creo correctamente
     public boolean getshotsOnterritory(int row, int col) {
         return ShotsOnterritory[row][col];
+    }
+
+    // metodo auxiliar que uso en gamecontroller para ver la ubicacion de los barcos
+    public boolean getOccupiedCellsPlayer(int row, int col) {
+        return occupiedCells[row][col];
     }
 
 
@@ -62,6 +66,7 @@ public class GameBoard implements Serializable {
     public boolean[][] getOccupiedCells() {
         return occupiedCells;
     }
+
 
     /*Finalmente, metamosle sabroso con un mismo metodo setter para restaurar datos de una partida siuu*/
     public void restoreBoard(Ship[][] ships, boolean[][] ShotsOnterritory, boolean[][] occupiedCells) {
@@ -107,8 +112,8 @@ public class GameBoard implements Serializable {
      */
     public Rectangle createCell() {
         Rectangle cell = new Rectangle(40, 40);
-        cell.setFill(Color.LIGHTGRAY);
-        cell.setStroke(Color.BLACK);
+        cell.setFill(Color.TRANSPARENT);
+        cell.setStroke(Color.WHITE);
         return cell;
     }
 
