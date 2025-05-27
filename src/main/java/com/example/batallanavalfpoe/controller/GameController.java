@@ -218,11 +218,24 @@ public class GameController {
         //ojo vivo, toca realizar algun tipo de limitacion para esto, para poder seguir jugando
         //pero probandolo por encima esta bien
         opponentButton.setDisable(true);
-        //playButton.setDisable(true);
+        playButton.setDisable(true);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
+
         List<Ship> flotaCompleta = generarFlotaCompleta();
         List<Ship> barcosColocados = obtenerBarcosColocados(playerBoard.getShips());
         List<Ship> barcosFaltantes = calcularBarcosFaltantes(flotaCompleta, barcosColocados);
         llenarFleetBox(fleetVBox, barcosFaltantes);
+
+
+        //y en caso de que esten los barcos puestos
+        if(barcosFaltantes.isEmpty()) {
+            playButton.setDisable(false);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
+            //opponent button ya se habilita despues de darle a play
+        }else{
+            opponentButton.setDisable(true);
+            playButton.setDisable(true);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
+        }
+
+
 
         fleetVBox.setDisable(false);
         System.out.println(">> Partida restaurada visualmente.");
