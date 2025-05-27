@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import com.example.batallanavalfpoe.model.GameBoard;
 import com.example.batallanavalfpoe.model.Ship;
@@ -26,6 +27,14 @@ public class OpponentController implements Initializable {
     private GameBoard opponentBoard;
     private final List<Ship> fleet = new ArrayList<>();
 
+    //necesitamos esta "llave" para poder controlar que version del controlador ejecutar
+    //y corregir el problema de generacion de barcos del oponente
+    private static boolean isRestoredFromSavedGame = false;
+    public static void setRestoredFromSavedGame(boolean restored) {
+        isRestoredFromSavedGame = restored;
+    }
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addFleet(4, "Portaviones", 1);
@@ -36,19 +45,26 @@ public class OpponentController implements Initializable {
         opponentBoard = new GameBoard(BOARD_ROWS, BOARD_COLS);
         opponentBoard.setupGrid(opponentGrid);
 
+
         for (int row = 0; row < BOARD_ROWS; row++) {
             for (int col = 0; col < BOARD_COLS; col++) {
                 opponentGrid.add(opponentBoard.createCell(), col, row);
             }
         }
 
-        if (savedShips != null) {
-            for (Ship ship : savedShips) {
-                opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship, ship.getDirection());
+        if (isRestoredFromSavedGame == false) {
+            if (savedShips != null) {
+                for (Ship ship : savedShips) {
+                    opponentBoard.placeShip(ship.getRow(), ship.getCol(), ship, ship.getDirection());
+                }
+                renderPlacedShips(savedShips);
+            } else {
+                savedShips = placeAllShipsRandomly();
             }
-            renderPlacedShips(savedShips);
-        } else {
-            savedShips = placeAllShipsRandomly();
+        }else {
+            //toca despues modificar esto xd
+            System.out.println("perrita");
+
         }
     }
 
@@ -141,4 +157,40 @@ public class OpponentController implements Initializable {
     public GameBoard getGameBoard() {
         return opponentBoard;
     }
+
+
+    public void restoreFrom(boolean[][] occupiedCells, Ship[][] shipMatrix) {
+        if (occupiedCells == null || shipMatrix == null) return;
+
+        for (int row = 0; row < occupiedCells.length; row++) {
+            for (int col = 0; col < occupiedCells[row].length; col++) {
+                if (occupiedCells[row][col] && shipMatrix[row][col] != null) {
+                    Rectangle rect = new Rectangle(40, 40);
+                    rect.setStroke(Color.BLACK);
+                    rect.setStrokeWidth(0.5);
+
+                    // Usa el tipo del barco para decidir el color
+                    rect.setFill(Color.DARKRED);
+
+                    // Agrega el rectángulo visual al gridpane
+                    opponentGrid.add(rect, col, row);
+                }
+            }
+        }
+    }
+
+    //esta funcion se modifica despues, para que dependiendo del tipo y direccion, le ponga pues
+    //la imagen correspondiente del barco
+    private Paint getShipColorByType(String type) {
+        return switch (type.toLowerCase()) {
+            case "frigate" -> Color.DARKBLUE;
+            case "destroyer" -> Color.FIREBRICK;
+            case "submarine" -> Color.DARKGREEN;
+            case "carrier" -> Color.GOLDENROD;
+            default -> Color.GRAY;
+        };
+    }
+
+
+
 }

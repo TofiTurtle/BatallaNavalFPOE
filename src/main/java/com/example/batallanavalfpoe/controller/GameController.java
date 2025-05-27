@@ -137,6 +137,26 @@ public class GameController {
                 gameState.getOccupiedMachineCells()
         );
 
+
+        //ojo atento vivi
+        /*
+        aca estamos creando una nueva vaina, posibles soluciones seria modificar
+        cosas de distintas clases, escencialmente el oController, pero es mucha cosa
+        mejor, vamos  aha cer un metodo breve que copie los datos de este y se los pase
+        (lit lo que hacemos con opponentboard xd)
+        if (opponentStage == null) {
+            opponentStage = new OpponentStage(); // O usa el que ya tienes guardado si está serializado
+            copyOpponentShips(); // Copiar los barcos al grid principal desde el stage invisible
+        }
+        */
+
+        OpponentController.setRestoredFromSavedGame(true);
+        opponentStage = new OpponentStage();
+        opponentStage.getController().restoreFrom(
+                gameState.getOccupiedMachineCells(),
+                gameState.getMachineShips()
+        );
+
         // 2. Restaurar visualmente la grilla del jugador
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
@@ -210,7 +230,7 @@ public class GameController {
 
         //ojo vivo, toca realizar algun tipo de limitacion para esto, para poder seguir jugando
         //pero probandolo por encima esta bien
-        opponentButton.setDisable(false);
+        opponentButton.setDisable(true);
         //playButton.setDisable(true);
 
         System.out.println(">> Partida restaurada visualmente.");
@@ -224,6 +244,7 @@ public class GameController {
         y los crea en otro stage, entonces al momento de iniciar el gamestage creo una instancia de opponent para
         crear los barcos de una
          */
+        OpponentController.setRestoredFromSavedGame(false);
         opponentStage = new OpponentStage();
 
         /*
