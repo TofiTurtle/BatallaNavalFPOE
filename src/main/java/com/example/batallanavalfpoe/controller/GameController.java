@@ -116,9 +116,15 @@ public class GameController {
     }
 
     private void loadSavedGame() {
-        /* NO COMENTEN ESTOS METODOS POR QUE ES LO MISMO QUE ESTAMOS HACIENDO EN SETUPNEWGAME
-        NO PONGAN COMENTARIOS INNECESARIOS PORQUE SINO YA NO VOY A PODER CORRER EL JUEGO*/
+        System.out.println("toilet anasdasdas");
 
+        System.out.println(">> Cargando partida guardada...");
+
+        //PARCHESE EN CUESTIONES DE IMAGENES, POR QUE YA SE LA ESTA COLOCANDO DESDE EL STAGE.
+        //img.setImage(gameState.getCharacterImage());
+
+
+        // 1. Restaurar estado interno de los tableros
         playerBoard.restoreBoard(
                 gameState.getPlayerShips(),
                 gameState.getPlayerShots(),
@@ -131,15 +137,85 @@ public class GameController {
                 gameState.getOccupiedMachineCells()
         );
 
-        /* ya confirme que todo se esta guardando (modifique temporalmente vermatriztiros para que muestre en
-        consola los tiros de la maquina, del oponente, y la ubicacion de los barcos de la maquina y del oponente)
-        SIN EMBARGO, al darle en continuar no se muestra nada, porque en este metodo aun no se le asigna ni la imagen
-        a los rectangulos ni se han generado los gridpanes como se hace en setupnewgame, por eso es como si
-        estuvieramos mostrando solo lo que hay en el fxml, el punto es que SI se estan guardadno las cosas solo q
-        pues toca poner eso que esta guardado en restoreboard visualmente
-         */
-        vermatriztiros();
+        // 2. Restaurar visualmente la grilla del jugador
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                final int r = row;
+                final int c = col;
+
+                Rectangle cell = playerBoard.createCell();
+                cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
+                cell.setStyle("-fx-background-color: TRANSPARENT;");
+                playerGrid.add(cell, c, r);
+
+                // Pintar si había un barco en esa celda
+                if (playerBoard.isOccupied(r, c)) {
+                    cell.setFill(Color.DARKTURQUOISE); // o alguna imagen si usas `ImagePattern`
+                }
+
+                // Pintar disparos recibidos
+                if (playerBoard.getshotsOnterritory(r,c)) {
+                    if (playerBoard.isOccupied(r,c)) {
+                        cell.setFill(Color.RED); // impacto
+                    } else {
+                        cell.setFill(Color.BLUE); // agua
+                    }
+                }
+            }
+        }
+
+        // 3. Restaurar visualmente la grilla del oponente (solo mostrar disparos hechos por el jugador)
+
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                Rectangle cell = opponentBoard.createCell();
+                opponentGrid.add(cell, col, row);
+
+                //comprobacion de donde estan los barcos enemigos
+                if (opponentBoard.isOccupied(row, col)) {
+                    cell.setFill(Color.DARKRED); // o alguna imagen si usas `ImagePattern`
+                }
+
+
+                if (opponentBoard.getshotsOnterritory(row,col)) {
+                    if (opponentBoard.isOccupied(row,col)) {
+                        cell.setFill(Color.RED); // impacto
+                    } else {
+                        cell.setFill(Color.BLUE); // agua
+                    }
+                }
+            }
+        }
+
+
+        // 4. Reestablecer eventos de teclado por si hay más interacción
+        playerGridContainer.setOnKeyPressed(event -> {
+            if (selectedShip == null) return;
+            switch (event.getCode()) {
+                case UP -> shipDirection = "UP";
+                case DOWN -> shipDirection = "DOWN";
+                case LEFT -> shipDirection = "LEFT";
+                case RIGHT -> shipDirection = "RIGHT";
+            }
+        });
+
+        Platform.runLater(() -> {
+            playerGridContainer.requestFocus();
+            playerGridContainer.setFocusTraversable(true);
+        });
+
+        //ojo, debemos de cambiar esto, para implementar logica de guardar partida asi sea con un barco puesto
+        fleetVBox.setVisible(false);
+        fleetVBox.setManaged(false);
+
+        //ojo vivo, toca realizar algun tipo de limitacion para esto, para poder seguir jugando
+        //pero probandolo por encima esta bien
+        opponentButton.setDisable(false);
+        //playButton.setDisable(true);
+
+        System.out.println(">> Partida restaurada visualmente.");
     }
+
 
     private void setupNewGame() {
         /*
