@@ -65,7 +65,6 @@ public class GameController {
     //creamos una variable que copie la version del juego a jugar para condicionar el initialize
     private GameState gameState;
 
-
     //a nuestro atributo gamestate le copiamos el objeto con los datos
     public void getGameState(GameState gameState){
         this.gameState = gameState;
@@ -110,14 +109,12 @@ public class GameController {
             loadSavedGame();
         }
         });
-
+        opponentButton.setVisible(false); //escondamos esta opcion, se muestra despues de darle a jugar
         //serialiable siuu siu siu toilet anasdasdas
         serializableFileHandler = new SerializableFileHandler();
     }
 
     private void loadSavedGame() {
-        System.out.println("toilet anasdasdas");
-
         System.out.println(">> Cargando partida guardada...");
 
         //copiamos en los tableros las vainas que ya traemos desde el gamestate
@@ -135,64 +132,36 @@ public class GameController {
 
         //le damos la llave de que en este caso ESTA CON UNA PARTIDA INICIADA OJO
         OpponentController.setRestoredFromSavedGame(true);
-        //creamos el oStage, y pues restorefrom lo que hace es en escencia copiar los datos
-        //TECNICAMENTE de momento se puede hacer solo con la matriz bool, pero la matriz
-        //ship la ocuparemos despues para las direcciones
+
+        //creamos la ventana emergente para ver barcos de machine. le pasamos datos de la machine
         opponentStage = new OpponentStage();
         opponentStage.getController().restoreFrom(
                 gameState.getOccupiedMachineCells(),
                 gameState.getMachineShips()
         );
 
-        /**
-         Rectangle cell = playerBoard.createCell();
-         cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
-         cell.setStyle("-fx-background-color: TRANSPARENT;");
-         playerGrid.add(cell, c, r);
 
-
-         // Pintar si había un barco en esa celda
-         if (playerBoard.isOccupied(r, c)) {
-         cell.setFill(Color.DARKTURQUOISE); // o alguna imagen si usas `ImagePattern`
-         }
-
-         // Pintar disparos recibidos
-         if (playerBoard.getshotsOnterritory(r,c)) {
-         if (playerBoard.isOccupied(r,c)) {
-         cell.setFill(Color.RED); // impacto
-         } else {
-         cell.setFill(Color.BLUE); // agua
-         }
-         }
-         **/
-
-        System.out.println("Estado de la matriz playerBoard.getShips():");
+        //RESTAURACION DEL JUGADOR:**************************************************
+            //restauracion de las cells y su eventos
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
-                Ship s = playerBoard.getShips()[row][col];
-                if (s != null) {
-                    System.out.println("Barco en [" + row + "," + col + "] -> dirección: " + s.getDirection() + ", tamaño: " + s.getSize());
-                }
-            }
-        }
-        //restauramos las vainas del player
-        for (int row = 0; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
-
                 final int r = row;
                 final int c = col;
+
                 Rectangle cell = playerBoard.createCell();
                 cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
                 cell.setStyle("-fx-background-color: TRANSPARENT;");
-                playerGrid.add(cell, c, r);
+                playerGrid.add(cell, c, r); // Primero las celdas
+            }
+        }
+            //restauracion de las imagenes y los barcos del estado de juego :v
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                //en dado caso de que en esa posicion no haya nada, se coloac esto para evitar un NUllpointer exception
+                if (playerBoard.getShips()[row][col] == null) continue;
 
-                Ship ship = playerBoard.getShips()[row][col];
-                if (ship == null) continue;
-                //comprobacion de que no se apilen
-                System.out.println("Barco en [" + row + "," + col + "] → ship.getRow(): " + ship.getRow() + ", getCol(): " + ship.getCol());
-
-                // solo pintar el barco si es su celda inicial
-                if (ship.getRow() == row && ship.getCol() == col) {
+                // solo pintar el barco si es su celda inicial, (evita el apilamiento)
+                if (playerBoard.getShips()[row][col].getRow() == row && playerBoard.getShips()[row][col].getCol() == col) {
 
                     double width = 40;
                     double height = 40;
@@ -235,81 +204,20 @@ public class GameController {
                     } else {
                         GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
                     }
+                    rect.toFront(); //las traemos al frente, para que no queden "detras" de la grilla
+
                 }
-                /**
-                final int r = row;
-                final int c = col;
-
-                Rectangle cell = playerBoard.createCell();
-                cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
-                cell.setStyle("-fx-background-color: TRANSPARENT;");
-                playerGrid.add(cell, col, row);
-
-                if(playerBoard.getShips()[row][col] == null){
-                    continue;
-                }
-                if(playerBoard.getShips()[row][col].getRow() == row && playerBoard.getShips()[row][col].getCol() == col){
-                    double width = 40;
-                    double height = 40;
-                    boolean vertical = playerBoard.getShips()[row][col].getDirection().equals("UP") || playerBoard.getShips()[row][col].getDirection().equals("DOWN");
-
-                    if (vertical) {
-                        height = playerBoard.getShips()[row][col].getSize() * 40;
-                    } else {
-                        width = playerBoard.getShips()[row][col].getSize() * 40;
-                    }
-                    Rectangle rect = new Rectangle(width, height);
-                    String imageName = switch (playerBoard.getShips()[row][col].getSize()) {
-                        case 1 -> "frigate";
-                        case 2 -> "destroyer";
-                        case 3 -> "submarine";
-                        case 4 -> "carrier";
-                        default -> "default";
-                    };
-
-                    String path = switch (playerBoard.getShips()[row][col].getDirection()) {
-                        case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
-                        case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
-                        case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
-                        case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
-                        default -> "/com/example/batallanavalfpoe/images/default_right.png";
-                    };
-
-                    try {
-                        Image image = new Image(getClass().getResourceAsStream(path));
-                        ImagePattern pattern = new ImagePattern(image);
-                        rect.setFill(Color.RED);
-                    } catch (Exception e) {
-                        rect.setFill(Color.GRAY);
-                    }
-
-                    playerGrid.add(rect, playerBoard.getShips()[row][col].getCol(), playerBoard.getShips()[row][col].getRow());
-
-                    if (vertical) {
-                        GridPane.setRowSpan(rect, playerBoard.getShips()[row][col].getSize());
-                    } else {
-                        GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
-                    }
-                 **/
-
-
             }
         }
+        //FIN DE RESTAURACION DEL JUGADOR
 
-
-        //restauramos las vainas del señor machin
-        /*ojo atento, aca pinto lo del oponente solo para comprobar que se esta
-        * guardando y generando todou correctamente, despues se quita ese ultimo if y trin
-        * despues de todou, la vaina se ve es en el Ocontroller.*/
+        //RESTAURACION DEL TABLERO DE LA MAQUINA
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
                 Rectangle cell = opponentBoard.createCell();
                 opponentGrid.add(cell, col, row);
 
-                //comprobacion de donde estan los barcos enemigos
-                if (opponentBoard.isOccupied(row, col)) {
-                    cell.setFill(Color.DARKRED); // o alguna imagen si usas `ImagePattern`
-                }
+                //colorear las celdas del oponente
                 if (opponentBoard.getshotsOnterritory(row,col)) {
                     if (opponentBoard.isOccupied(row,col)) {
                         cell.setFill(Color.RED); // impacto
@@ -319,9 +227,9 @@ public class GameController {
                 }
             }
         }
+        //FIN RESTAURACION MACHINE
 
-
-        // le volvemos a dar vaina de los eventos
+        //le volvemos a dar vaina de los eventos
         playerGridContainer.setOnKeyPressed(event -> {
             if (selectedShip == null) return;
             switch (event.getCode()) {
@@ -331,41 +239,32 @@ public class GameController {
                 case RIGHT -> shipDirection = "RIGHT";
             }
         });
-
         Platform.runLater(() -> {
             playerGridContainer.requestFocus();
             playerGridContainer.setFocusTraversable(true);
         });
 
-
-
-        //ojo vivo, toca realizar algun tipo de limitacion para esto, para poder seguir jugando
-        //pero probandolo por encima esta bien
-        opponentButton.setDisable(true);
-        playButton.setDisable(true);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
-
+        //aca creamos las listas con los barcos, para poder sacar los barcos q falten poner
+        //y con ello, llenar el fleetbox
         List<Ship> flotaCompleta = generarFlotaCompleta();
         List<Ship> barcosColocados = obtenerBarcosColocados(playerBoard.getShips());
         List<Ship> barcosFaltantes = calcularBarcosFaltantes(flotaCompleta, barcosColocados);
         llenarFleetBox(fleetVBox, barcosFaltantes);
 
-
-        //y en caso de que esten los barcos puestos
+        //Ahora, un condicional para saber cuando el boton de jugar esta habilitado (si no hay barcos restantes)
         if(barcosFaltantes.isEmpty()) {
+            //no hace falta habilitar oButton, ya se hace en el playB, aca tambien se muestra asi q parchese
             playButton.setDisable(false);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
-            //opponent button ya se habilita despues de darle a play
         }else{
-            opponentButton.setDisable(true);
+            opponentButton.setDisable(true);//ojo vivo, se debe mantener desabilitado
             playButton.setDisable(true);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
         }
 
-
-
-        fleetVBox.setDisable(false);
         System.out.println(">> Partida restaurada visualmente.");
     }
 
     //*****************************************************************
+    //esta funcion llena una lista con los barcos disponibles en el juego
     private List<Ship> generarFlotaCompleta() {
         List<Ship> flota = new ArrayList<>();
 
@@ -373,9 +272,9 @@ public class GameController {
         for (int i = 0; i < 2; i++) flota.add(new Ship(3, "Submarino", 0,"default"));
         for (int i = 0; i < 3; i++) flota.add(new Ship(2, "Destructor", 0,"default"));
         for (int i = 0; i < 4; i++) flota.add(new Ship(1, "Fragata", 0,"default"));
-
         return flota;
     }
+    //ahora, esta funcion lo que ahce es llenar un arreglo con los barcos que ESTAN COLOCADOS
     private List<Ship> obtenerBarcosColocados(Ship[][] shipMatrix) {
         List<Ship> colocados = new ArrayList<>();
 
@@ -387,9 +286,10 @@ public class GameController {
                 }
             }
         }
-
         return colocados;
     }
+    //ahora, esta funcion lo que hace es recorrer las listas, si encuentra un barco que SI esta colocado
+    //lo que hace es sacarlo de la lista (originalmente era flotacompltea). dejando una lista de solo lo q falta
     private List<Ship> calcularBarcosFaltantes(List<Ship> flotaCompleta, List<Ship> colocados) {
         List<Ship> faltantes = new ArrayList<>(flotaCompleta); // copiar
 
@@ -401,10 +301,10 @@ public class GameController {
                 }
             }
         }
-
         return faltantes;
     }
-    //*****************************************************************
+    //por ultimo, en esta funcion con los barcos faltantes obtenidos anteriormente, llenamos el fleetbox
+    //para casos de partidas donde falte por colocar barcos. (guardamos con cada evento click en gridPlayer)
     private void llenarFleetBox(VBox fleetVBox, List<Ship> faltantes) {
         fleetVBox.getChildren().clear();
 
@@ -432,7 +332,7 @@ public class GameController {
         }
     }
     //**************************************************************************************
-    //**************************************************************************************
+
 
     private void setupNewGame() {
         /*
@@ -887,6 +787,7 @@ public class GameController {
         buttonsHBox.getChildren().remove(playButton);
         buttonsHBox.setAlignment(Pos.CENTER);
         opponentButton.setDisable(false);
+        opponentButton.setVisible(true);
         gridDisabled = false; //asdasdasdasdadasd
         //asdasd
 

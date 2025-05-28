@@ -158,7 +158,7 @@ public class OpponentController implements Initializable {
         return opponentBoard;
     }
 
-
+    //esta funcion es literal copypaster del codigo que ya se tenia de rendership
     public void restoreFrom(boolean[][] occupiedCells, Ship[][] shipMatrix) {
         double cellSize = 40;
         if (occupiedCells == null || shipMatrix == null) return;
@@ -166,14 +166,6 @@ public class OpponentController implements Initializable {
         for (int row = 0; row < occupiedCells.length; row++) {
             for (int col = 0; col < occupiedCells[row].length; col++) {
                 if (occupiedCells[row][col] && shipMatrix[row][col] != null) {
-                    //rect.setStroke(Color.BLACK);
-                    //rect.setStrokeWidth(0.5);
-                    // Usa el tipo del barco para decidir el color
-                    //rect.setFill(Color.DARKRED);
-                    //implementacio para ponerle imagenes a esta vainosa*****
-                    // Agrega el rectángulo visual al gridpane
-                    //opponentGrid.add(rect, col, row); //version del coso gris
-
                         double width = cellSize;
                         double height = cellSize;
                         boolean vertical = shipMatrix[row][col].getDirection().equals("UP") || shipMatrix[row][col].getDirection().equals("DOWN");
@@ -215,8 +207,6 @@ public class OpponentController implements Initializable {
                         } else {
                             GridPane.setColumnSpan(rect, shipMatrix[row][col].getSize());
                         }
-                    //implementacio para ponerle imagenes a esta vainosa*****
-
 
                 }
             }

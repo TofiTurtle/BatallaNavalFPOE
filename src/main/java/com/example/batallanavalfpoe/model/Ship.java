@@ -15,10 +15,10 @@ public class Ship implements Serializable {
         this.size = size;
         this.name = name;
         this.hits = hits; //inicializamos hits en 0 siemrep
-        this.direction = direction;
+        this.direction = direction; //ojo, ahora la inicializacion de ships necesitamos tener su direccion
 
     }
-    //ojo
+    //nuevos metodos añadidos que sirven para settear info del ship (se usa en PlaceShip de Gboard)
     public void setRow(int row) {
         this.row = row;
     }
