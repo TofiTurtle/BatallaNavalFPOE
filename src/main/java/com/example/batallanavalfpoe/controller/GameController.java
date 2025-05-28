@@ -67,6 +67,13 @@ public class GameController {
 
     //creamos una variable que copie la version del juego a jugar para condicionar el initialize
     private GameState gameState;
+    //creemos dos atributos que cuenten los hits para mostrar mensaje de de victoria
+    private int playerHits = 0;
+    private int machineHits = 0;
+
+
+
+
 
     //a nuestro atributo gamestate le copiamos el objeto con los datos
     public void getGameState(GameState gameState){
@@ -115,7 +122,18 @@ public class GameController {
         //serialiable siuu siu siu toilet anasdasdas
         serializableFileHandler = new SerializableFileHandler();
     }
-
+    private void winFunction() {
+        //FUNCION PARA MOSTRAR MENSAJE DE VICTORIA
+        if (playerHits == 20) {
+            titleLabel.setText("Haz conseguido la victoria!");
+            playerGrid.setDisable(true);
+            opponentGrid.setDisable(true);
+        } else if (machineHits == 20) {
+            titleLabel.setText("Haz sido derrotado...");
+            playerGrid.setDisable(true);
+            opponentGrid.setDisable(true);
+        }
+    }
     private void loadSavedGame() {
         System.out.println(">> Cargando partida guardada...");
 
@@ -503,10 +521,15 @@ public class GameController {
         opponentGrid.add(shotRectangle, shotCol, shotRow);
         //Y tambien, ahora copiemoslo en la matriz de tiros bool del opponenBoardo!
         opponentBoard.setShotsOnterritory(shotRow, shotCol); //tripi
-        vermatriztiros(); //pillemos si esta bien
+
 
         //ahora hagamos la respectiva comprobacion de hit o miss
         if (opponentBoard.isOccupied(shotRow, shotCol)) {
+            //registramos el disparo de el jugador
+            playerHits++;
+            System.out.println(playerHits);
+            winFunction();//llamamos condicion de victoria
+
             // 1. Obtener el barco que fue impactado
             Ship hitShip = opponentBoard.getShip(shotRow, shotCol); // esto debes implementarlo
 
@@ -519,6 +542,7 @@ public class GameController {
 
             } else {
                 System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
+
             }
             saveGame();
             shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
@@ -561,6 +585,10 @@ public class GameController {
 
             //condicional para comprobar x2 si el comportamiento es adecuado + salir del dowhile
             if(playerBoard.isOccupied(MachineshotRow, MachineshotCol)) {
+                //registramos el disparo acertado de la machin
+                machineHits++;
+                System.out.println(machineHits);
+                winFunction();
 
                 // 1. Obtener el barco que fue impactado
                 Ship hitShip = playerBoard.getShip(MachineshotRow, MachineshotCol); //se crea barco tocado con el barco de el PLAYERboard ojo vivo, es del player
@@ -593,39 +621,7 @@ public class GameController {
     }
     //metodo temporal para comprobar que si se genera esa webada bien
     //listo, funciona bien en opponent y player
-    private void vermatriztiros() {
-        System.out.println("\n📍 MATRIZ DE TIROS DEL JUGADOR SOBRE EL OPONENTE:");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", opponentBoard.getshotsOnterritory(i, j)); // %-3s = 3 caracteres de ancho, alineado a la izquierda
-            }
-            System.out.println();
-        }
 
-        System.out.println("\n📍 MATRIZ DE TIROS DEL OPONENTE SOBRE EL JUGADOR:");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", playerBoard.getshotsOnterritory(i, j));
-            }
-            System.out.println();
-        }
-
-        System.out.println("\n🚢 UBICACION DE BARCOS DEL JUGADOR:");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", playerBoard.getOccupiedCellsPlayer(i,j));
-            }
-            System.out.println();
-        }
-
-        System.out.println("\n🚢 UBICACION DE BARCOS DEL OPONENTE:");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                System.out.printf("%-3s ", opponentBoard.getOccupiedCellsPlayer(i,j));
-            }
-            System.out.println();
-        }
-    }
 
     private void handlePlayerGridClick(MouseEvent event, int row, int col) {
         if (selectedShip == null) return;
@@ -818,7 +814,6 @@ public class GameController {
         titleLabel.setText("Que la fuerza te acompañe...");
         fleetLabel.setVisible(false); //quitamos el label que muestra en el fleetbox
 
-
         // actualizamos el titulo en gamestate
         if (gameState != null) {
             gameState.setTitleText(titleLabel.getText());
@@ -827,6 +822,7 @@ public class GameController {
         // GUARDAR POR SI LAS MOSCAS
         saveGame();
     }
+
 
     @FXML
     private void goToWelcomeStage(ActionEvent event) throws IOException {
