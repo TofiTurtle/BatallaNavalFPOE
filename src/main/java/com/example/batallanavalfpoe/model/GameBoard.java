@@ -112,8 +112,8 @@ public class GameBoard implements Serializable {
      */
     public Rectangle createCell() {
         Rectangle cell = new Rectangle(40, 40);
-        cell.setFill(Color.LIGHTGRAY);
-        cell.setStroke(Color.BLACK);
+        cell.setFill(Color.TRANSPARENT);
+        cell.setStroke(Color.WHITE);
         return cell;
     }
 
@@ -163,6 +163,12 @@ public class GameBoard implements Serializable {
             case "LEFT" -> dCol = 1;
             case "RIGHT" -> dCol = 1;
         }
+
+        // Establecer info base del barco (muy importante)
+        //esto es necesario para que no se apilen los barcos en 0,0 en los fors anidados
+        ship.setRow(row);
+        ship.setCol(col);
+        ship.setDirection(direction);
 
         for (int i = 0; i < ship.getSize(); i++) { //podemos cambiar el size por el getsize()
             int r = row + dRow * i;

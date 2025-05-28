@@ -115,7 +115,6 @@ public class CharacterSelectorController {
         //no deje iniciar la aplicacion cierto? see xd
         String name = textField.getText().trim();
         if (name.isEmpty()) {
-            emptyNameLabel.setText("Ingrese un nickname");
             emptyNameLabel.setVisible(true);
             return;
         }

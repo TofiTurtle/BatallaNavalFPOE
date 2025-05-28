@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<VBox xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.OpponentController" alignment="CENTER" spacing="10" prefWidth="450" prefHeight="470">
-    <Label text="Tablero del Oponente" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
-    <GridPane fx:id="opponentGrid" gridLinesVisible="true" prefWidth="400" prefHeight="400"/>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.batallanavalfpoe.controller.OpponentController">
+    <ImageView fitWidth="450.0" fitHeight="470.0" preserveRatio="false">
+        <image>
+            <Image url="@images/background.gif" />
+        </image>
+    </ImageView>
+    <VBox alignment="CENTER" prefHeight="470" prefWidth="450" spacing="10">
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-stroke-width: 2px; -fx-stroke: yellow;" text="Tablero del oponente" textAlignment="CENTER">
+            <font>
+                <Font name="Star Jedi Logo MonoLine" size="20.0" />
+            </font>
+            <effect>
+                <Glow level="1.0" />
+            </effect>
+        </Text>
+    <GridPane fx:id="opponentGrid" alignment="CENTER" gridLinesVisible="true" prefHeight="400" prefWidth="400" />
 </VBox>
+</StackPane>
