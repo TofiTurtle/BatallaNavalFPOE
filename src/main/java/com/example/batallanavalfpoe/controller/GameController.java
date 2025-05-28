@@ -40,6 +40,8 @@ public class GameController {
     @FXML private HBox buttonsHBox;
     @FXML private Button opponentButton;
     @FXML private ImageView img;
+    @FXML private Label titleLabel;
+
     private GameBoard playerBoard = new GameBoard(10, 10);
     private OpponentStage opponentStage;
 
@@ -109,13 +111,15 @@ public class GameController {
             loadSavedGame();
         }
         });
-        opponentButton.setVisible(false); //escondamos esta opcion, se muestra despues de darle a jugar
         //serialiable siuu siu siu toilet anasdasdas
         serializableFileHandler = new SerializableFileHandler();
     }
 
     private void loadSavedGame() {
         System.out.println(">> Cargando partida guardada...");
+
+        //restauramos el titulo del juego
+        titleLabel.setText(gameState.getTitleText());
 
         //copiamos en los tableros las vainas que ya traemos desde el gamestate
         playerBoard.restoreBoard(
@@ -246,13 +250,13 @@ public class GameController {
 
         //aca creamos las listas con los barcos, para poder sacar los barcos q falten poner
         //y con ello, llenar el fleetbox
-        List<Ship> flotaCompleta = generarFlotaCompleta();
-        List<Ship> barcosColocados = obtenerBarcosColocados(playerBoard.getShips());
-        List<Ship> barcosFaltantes = calcularBarcosFaltantes(flotaCompleta, barcosColocados);
-        llenarFleetBox(fleetVBox, barcosFaltantes);
+        List<Ship> fullFleet = generateFullFleet();
+        List<Ship> placedShips = getPlacedShips(playerBoard.getShips());
+        List<Ship> remainingShips = calculateRemainingShips(fullFleet, placedShips);
+        fillFleetBox(fleetVBox, remainingShips);
 
         //Ahora, un condicional para saber cuando el boton de jugar esta habilitado (si no hay barcos restantes)
-        if(barcosFaltantes.isEmpty()) {
+        if(remainingShips.isEmpty()) {
             //no hace falta habilitar oButton, ya se hace en el playB, aca tambien se muestra asi q parchese
             playButton.setDisable(false);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
         }else{
@@ -260,55 +264,68 @@ public class GameController {
             playButton.setDisable(true);//quitamos el boton de mientras, se activa cuando esten todos lso barcos
         }
 
+        // Centrar botones del HBox
+        buttonsHBox.setAlignment(Pos.CENTER);
+
+        // Si ya no quedan barcos, quitar fleetVBox y centrar las grillas
+        boolean onlyLabelLeft = fleetVBox.getChildren().stream().allMatch(node -> !(node instanceof Rectangle));
+        if (onlyLabelLeft) {
+            Node stackPane = fleetVBox.getParent();
+            if (stackPane != null && stackPane.getParent() instanceof HBox gridsHBox) {
+                gridsHBox.getChildren().remove(stackPane);
+                gridsHBox.setAlignment(Pos.CENTER);
+            }
+        }
+
         System.out.println(">> Partida restaurada visualmente.");
     }
 
     //*****************************************************************
     //esta funcion llena una lista con los barcos disponibles en el juego
-    private List<Ship> generarFlotaCompleta() {
-        List<Ship> flota = new ArrayList<>();
+    private List<Ship> generateFullFleet() {
+        List<Ship> fleet = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) flota.add(new Ship(4, "Portaviones", 0,"default"));
-        for (int i = 0; i < 2; i++) flota.add(new Ship(3, "Submarino", 0,"default"));
-        for (int i = 0; i < 3; i++) flota.add(new Ship(2, "Destructor", 0,"default"));
-        for (int i = 0; i < 4; i++) flota.add(new Ship(1, "Fragata", 0,"default"));
-        return flota;
+        for (int i = 0; i < 1; i++) fleet.add(new Ship(4, "Portaviones", 0,"default"));
+        for (int i = 0; i < 2; i++) fleet.add(new Ship(3, "Submarino", 0,"default"));
+        for (int i = 0; i < 3; i++) fleet.add(new Ship(2, "Destructor", 0,"default"));
+        for (int i = 0; i < 4; i++) fleet.add(new Ship(1, "Fragata", 0,"default"));
+        return fleet;
     }
     //ahora, esta funcion lo que ahce es llenar un arreglo con los barcos que ESTAN COLOCADOS
-    private List<Ship> obtenerBarcosColocados(Ship[][] shipMatrix) {
-        List<Ship> colocados = new ArrayList<>();
+    private List<Ship> getPlacedShips(Ship[][] shipMatrix) {
+        List<Ship> placed = new ArrayList<>();
 
         for (int row = 0; row < shipMatrix.length; row++) {
             for (int col = 0; col < shipMatrix[0].length; col++) {
                 Ship s = shipMatrix[row][col];
-                if (s != null && !colocados.contains(s)) {
-                    colocados.add(s);
+                if (s != null && !placed.contains(s)) {
+                    placed.add(s);
                 }
             }
         }
-        return colocados;
+        return placed;
     }
     //ahora, esta funcion lo que hace es recorrer las listas, si encuentra un barco que SI esta colocado
     //lo que hace es sacarlo de la lista (originalmente era flotacompltea). dejando una lista de solo lo q falta
-    private List<Ship> calcularBarcosFaltantes(List<Ship> flotaCompleta, List<Ship> colocados) {
-        List<Ship> faltantes = new ArrayList<>(flotaCompleta); // copiar
+    private List<Ship> calculateRemainingShips(List<Ship> fullFleet, List<Ship> placedS) {
+        List<Ship> remaining = new ArrayList<>(fullFleet); // copiar
 
-        for (Ship colocado : colocados) {
-            for (int i = 0; i < faltantes.size(); i++) {
-                if (faltantes.get(i).getSize() == colocado.getSize()) {
-                    faltantes.remove(i); // elimina solo una ocurrencia
+        for (Ship placed : placedS) {
+            for (int i = 0; i < remaining.size(); i++) {
+                if (remaining.get(i).getSize() == placed.getSize()) {
+                    remaining.remove(i); // elimina solo una ocurrencia
                     break;
                 }
             }
         }
-        return faltantes;
+        return remaining;
     }
     //por ultimo, en esta funcion con los barcos faltantes obtenidos anteriormente, llenamos el fleetbox
     //para casos de partidas donde falte por colocar barcos. (guardamos con cada evento click en gridPlayer)
-    private void llenarFleetBox(VBox fleetVBox, List<Ship> faltantes) {
+    private void fillFleetBox(VBox fleetVBox, List<Ship> remaining) {
         fleetVBox.getChildren().clear();
 
-        for (Ship ship : faltantes) {
+        for (Ship ship : remaining) {
             int size = ship.getSize();
             Rectangle rect = new Rectangle(size * 40, 40);
 
@@ -787,10 +804,18 @@ public class GameController {
         buttonsHBox.getChildren().remove(playButton);
         buttonsHBox.setAlignment(Pos.CENTER);
         opponentButton.setDisable(false);
-        opponentButton.setVisible(true);
-        gridDisabled = false; //asdasdasdasdadasd
-        //asdasd
+        gridDisabled = false;
 
+        // cambiaos el etxto pa q ya no se vea pon tus flotas
+        titleLabel.setText("Buena suerte, soldado");
+
+        // actualizamos el titulo en gamestate
+        if (gameState != null) {
+            gameState.setTitleText(titleLabel.getText());
+        }
+
+        // GUARDAR POR SI LAS MOSCAS
+        saveGame();
     }
 
     @FXML
@@ -818,7 +843,7 @@ public class GameController {
         boolean[][] occupiedMachineCells = opponentBoard.getOccupiedCells();
 
         //ahora si, creamos el objeto gamestate, pues ya tenemos listos sus atributicos
-        GameState gameState = new GameState(playerShips, playerShots,occupiedPlayerCells, machineShips, machineShots,occupiedMachineCells);
+        GameState gameState = new GameState(playerShips, playerShots,occupiedPlayerCells, machineShips, machineShots,occupiedMachineCells, titleLabel.getText());
 
         //por ultimito, sencillamente le pasamos nuestro estado del juego al papuserializador
         serializableFileHandler.serialize("game_data.ser", gameState);

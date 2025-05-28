@@ -10,12 +10,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import com.example.batallanavalfpoe.model.GameBoard;
 import com.example.batallanavalfpoe.model.Ship;
+import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.*;
 
 public class OpponentController implements Initializable {
-
+    Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
     @FXML
     private GridPane opponentGrid;
 

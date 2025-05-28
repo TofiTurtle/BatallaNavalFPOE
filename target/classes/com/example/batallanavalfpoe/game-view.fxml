@@ -37,7 +37,7 @@
                         <Insets right="320.0" />
                      </HBox.margin>
                   </VBox>
-                  <Label text="Posiciona tus flotas" textAlignment="RIGHT" textFill="WHITE">
+                  <Label fx:id="titleLabel" text="Posiciona tus flotas" textAlignment="RIGHT" textFill="WHITE">
                      <font>
                         <Font name="Star Jedi Logo MonoLine" size="40.0" />
                      </font>

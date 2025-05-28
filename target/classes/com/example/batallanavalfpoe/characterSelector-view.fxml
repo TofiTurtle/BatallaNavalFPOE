@@ -73,9 +73,9 @@
                </children>
             </HBox>
 
-            <Label fx:id="emptyNameLabel" text="El nombre no puede estar vacio" visible="false" textFill="WHITE">
+            <Label fx:id="emptyNameLabel" text="ingrese un nickname" visible="false" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="14.0" />
+                  <Font name="Star Jedi Logo MonoLine" size="14.0" />
                </font>
                <padding>
                   <Insets top="10.0" />

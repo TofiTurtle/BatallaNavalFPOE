@@ -14,14 +14,18 @@ public class GameState implements Serializable {
     private boolean[][] machineShots;
     private boolean[][] occupiedMachineCells;
 
+    // pa restaurar el texto del titulo
+    private String titleText;
+
     public GameState(Ship[][] playerShips, boolean[][] playerShots, boolean[][] occupiedPlayerCells,
-                     Ship[][] machineShips, boolean[][] machineShots, boolean[][] occupiedMachineCells) {
+                     Ship[][] machineShips, boolean[][] machineShots, boolean[][] occupiedMachineCells, String titleText) {
         this.playerShips = playerShips;
         this.playerShots = playerShots;
         this.occupiedPlayerCells = occupiedPlayerCells;
         this.machineShips = machineShips;
         this.machineShots = machineShots;
         this.occupiedMachineCells = occupiedMachineCells;
+        this.titleText = titleText;
     }
 
     // Getters, etas vainas son necesarias para despues volver a sacar esas cosas xd
@@ -43,5 +47,12 @@ public class GameState implements Serializable {
     }
     public boolean[][] getOccupiedMachineCells() {
         return occupiedMachineCells;
+    }
+
+    public String getTitleText() {
+        return titleText;
+    }
+    public void setTitleText(String titleText) {
+        this.titleText = titleText;
     }
 }
