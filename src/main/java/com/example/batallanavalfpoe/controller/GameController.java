@@ -41,6 +41,7 @@ public class GameController {
     @FXML private Button opponentButton;
     @FXML private ImageView img;
     @FXML private Label titleLabel;
+    @FXML private Label fleetLabel;
 
     private GameBoard playerBoard = new GameBoard(10, 10);
     private OpponentStage opponentStage;
@@ -118,8 +119,10 @@ public class GameController {
     private void loadSavedGame() {
         System.out.println(">> Cargando partida guardada...");
 
+
         //restauramos el titulo del juego
         titleLabel.setText(gameState.getTitleText());
+
 
         //copiamos en los tableros las vainas que ya traemos desde el gamestate
         playerBoard.restoreBoard(
@@ -266,6 +269,7 @@ public class GameController {
 
         // Centrar botones del HBox
         buttonsHBox.setAlignment(Pos.CENTER);
+        //asdasd
 
         // Si ya no quedan barcos, quitar fleetVBox y centrar las grillas
         boolean onlyLabelLeft = fleetVBox.getChildren().stream().allMatch(node -> !(node instanceof Rectangle));
@@ -324,6 +328,10 @@ public class GameController {
     //para casos de partidas donde falte por colocar barcos. (guardamos con cada evento click en gridPlayer)
     private void fillFleetBox(VBox fleetVBox, List<Ship> remaining) {
         fleetVBox.getChildren().clear();
+        //mostramos la etiqueta de barcos resultantes, la traemos al frenet
+        fleetLabel.setVisible(true);
+        fleetVBox.getChildren().add(fleetLabel);
+
 
         for (Ship ship : remaining) {
             int size = ship.getSize();
@@ -344,9 +352,9 @@ public class GameController {
             shipSizeMap.put(rect, size);
             shipImageMap.put(rect, pattern);
             rect.setOnMouseClicked(event -> selectShip(rect));
-
             fleetVBox.getChildren().add(rect);
         }
+
     }
     //**************************************************************************************
 
@@ -807,7 +815,9 @@ public class GameController {
         gridDisabled = false;
 
         // cambiaos el etxto pa q ya no se vea pon tus flotas
-        titleLabel.setText("Buena suerte, soldado");
+        titleLabel.setText("Que la fuerza te acompañe...");
+        fleetLabel.setVisible(false); //quitamos el label que muestra en el fleetbox
+
 
         // actualizamos el titulo en gamestate
         if (gameState != null) {
