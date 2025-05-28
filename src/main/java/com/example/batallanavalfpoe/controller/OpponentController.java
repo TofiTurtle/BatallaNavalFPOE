@@ -70,7 +70,7 @@ public class OpponentController implements Initializable {
 
     private void addFleet(int size, String name, int count) {
         for (int i = 0; i < count; i++) {
-            fleet.add(new Ship(size, name,0));
+            fleet.add(new Ship(size, name,0,"default"));
         }
     }
 

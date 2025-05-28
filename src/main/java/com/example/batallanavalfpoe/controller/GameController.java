@@ -178,59 +178,120 @@ public class GameController {
         //restauramos las vainas del player
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
+
+                final int r = row;
+                final int c = col;
+                Rectangle cell = playerBoard.createCell();
+                cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
+                cell.setStyle("-fx-background-color: TRANSPARENT;");
+                playerGrid.add(cell, c, r);
+
+                Ship ship = playerBoard.getShips()[row][col];
+                if (ship == null) continue;
+                //comprobacion de que no se apilen
+                System.out.println("Barco en [" + row + "," + col + "] → ship.getRow(): " + ship.getRow() + ", getCol(): " + ship.getCol());
+
+                // solo pintar el barco si es su celda inicial
+                if (ship.getRow() == row && ship.getCol() == col) {
+
+                    double width = 40;
+                    double height = 40;
+                    boolean vertical = playerBoard.getShips()[row][col].getDirection().equals("UP") || playerBoard.getShips()[row][col].getDirection().equals("DOWN");
+
+                    if (vertical) {
+                        height = playerBoard.getShips()[row][col].getSize() * 40;
+                    } else {
+                        width = playerBoard.getShips()[row][col].getSize() * 40;
+                    }
+                    Rectangle rect = new Rectangle(width, height);
+                    String imageName = switch (playerBoard.getShips()[row][col].getSize()) {
+                        case 1 -> "frigate";
+                        case 2 -> "destroyer";
+                        case 3 -> "submarine";
+                        case 4 -> "carrier";
+                        default -> "default";
+                    };
+
+                    String path = switch (playerBoard.getShips()[row][col].getDirection()) {
+                        case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                        case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                        case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                        case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                        default -> "/com/example/batallanavalfpoe/images/default_right.png";
+                    };
+
+                    try {
+                        Image image = new Image(getClass().getResourceAsStream(path));
+                        ImagePattern pattern = new ImagePattern(image);
+                        rect.setFill(pattern);
+                    } catch (Exception e) {
+                        rect.setFill(Color.GRAY);
+                    }
+
+                    playerGrid.add(rect, playerBoard.getShips()[row][col].getCol(), playerBoard.getShips()[row][col].getRow());
+
+                    if (vertical) {
+                        GridPane.setRowSpan(rect, playerBoard.getShips()[row][col].getSize());
+                    } else {
+                        GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
+                    }
+                }
+                /**
                 final int r = row;
                 final int c = col;
 
                 Rectangle cell = playerBoard.createCell();
                 cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
                 cell.setStyle("-fx-background-color: TRANSPARENT;");
-                playerGrid.add(cell, c, r);
+                playerGrid.add(cell, col, row);
 
-                if(playerBoard.getShips()[r][c] == null){
+                if(playerBoard.getShips()[row][col] == null){
                     continue;
                 }
+                if(playerBoard.getShips()[row][col].getRow() == row && playerBoard.getShips()[row][col].getCol() == col){
+                    double width = 40;
+                    double height = 40;
+                    boolean vertical = playerBoard.getShips()[row][col].getDirection().equals("UP") || playerBoard.getShips()[row][col].getDirection().equals("DOWN");
 
-                double width = 40;
-                double height = 40;
-                boolean vertical = playerBoard.getShips()[row][col].getDirection().equals("UP") || playerBoard.getShips()[row][col].getDirection().equals("DOWN");
+                    if (vertical) {
+                        height = playerBoard.getShips()[row][col].getSize() * 40;
+                    } else {
+                        width = playerBoard.getShips()[row][col].getSize() * 40;
+                    }
+                    Rectangle rect = new Rectangle(width, height);
+                    String imageName = switch (playerBoard.getShips()[row][col].getSize()) {
+                        case 1 -> "frigate";
+                        case 2 -> "destroyer";
+                        case 3 -> "submarine";
+                        case 4 -> "carrier";
+                        default -> "default";
+                    };
 
-                if (vertical) {
-                    height = playerBoard.getShips()[row][col].getSize() * 40;
-                } else {
-                    width = playerBoard.getShips()[row][col].getSize() * 40;
-                }
-                Rectangle rect = new Rectangle(width, height);
-                String imageName = switch (playerBoard.getShips()[row][col].getSize()) {
-                    case 1 -> "frigate";
-                    case 2 -> "destroyer";
-                    case 3 -> "submarine";
-                    case 4 -> "carrier";
-                    default -> "default";
-                };
+                    String path = switch (playerBoard.getShips()[row][col].getDirection()) {
+                        case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                        case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                        case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                        case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                        default -> "/com/example/batallanavalfpoe/images/default_right.png";
+                    };
 
-                String path = switch (playerBoard.getShips()[row][col].getDirection()) {
-                    case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
-                    case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
-                    case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
-                    case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
-                    default -> "/com/example/batallanavalfpoe/images/default_right.png";
-                };
+                    try {
+                        Image image = new Image(getClass().getResourceAsStream(path));
+                        ImagePattern pattern = new ImagePattern(image);
+                        rect.setFill(Color.RED);
+                    } catch (Exception e) {
+                        rect.setFill(Color.GRAY);
+                    }
 
-                try {
-                    Image image = new Image(getClass().getResourceAsStream(path));
-                    ImagePattern pattern = new ImagePattern(image);
-                    rect.setFill(Color.RED);
-                } catch (Exception e) {
-                    rect.setFill(Color.GRAY);
-                }
+                    playerGrid.add(rect, playerBoard.getShips()[row][col].getCol(), playerBoard.getShips()[row][col].getRow());
 
-                playerGrid.add(rect, playerBoard.getShips()[row][col].getCol(), playerBoard.getShips()[row][col].getRow());
+                    if (vertical) {
+                        GridPane.setRowSpan(rect, playerBoard.getShips()[row][col].getSize());
+                    } else {
+                        GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
+                    }
+                 **/
 
-                if (vertical) {
-                    GridPane.setRowSpan(rect, playerBoard.getShips()[row][col].getSize());
-                } else {
-                    GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
-                }
 
             }
         }
@@ -308,10 +369,10 @@ public class GameController {
     private List<Ship> generarFlotaCompleta() {
         List<Ship> flota = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) flota.add(new Ship(4, "Portaviones", 0));
-        for (int i = 0; i < 2; i++) flota.add(new Ship(3, "Submarino", 0));
-        for (int i = 0; i < 3; i++) flota.add(new Ship(2, "Destructor", 0));
-        for (int i = 0; i < 4; i++) flota.add(new Ship(1, "Fragata", 0));
+        for (int i = 0; i < 1; i++) flota.add(new Ship(4, "Portaviones", 0,"default"));
+        for (int i = 0; i < 2; i++) flota.add(new Ship(3, "Submarino", 0,"default"));
+        for (int i = 0; i < 3; i++) flota.add(new Ship(2, "Destructor", 0,"default"));
+        for (int i = 0; i < 4; i++) flota.add(new Ship(1, "Fragata", 0,"default"));
 
         return flota;
     }
@@ -680,7 +741,7 @@ public class GameController {
                 break;
         }
 
-        Ship ship = new Ship(selectedShipSize, shipName, 0);
+        Ship ship = new Ship(selectedShipSize, shipName, 0,shipDirection);
         // Colocar barco en el modelo
         playerBoard.placeShip(startRow, startCol,ship,shipDirection);
 

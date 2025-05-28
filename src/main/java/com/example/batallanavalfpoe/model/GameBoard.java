@@ -164,6 +164,12 @@ public class GameBoard implements Serializable {
             case "RIGHT" -> dCol = 1;
         }
 
+        // Establecer info base del barco (muy importante)
+        //esto es necesario para que no se apilen los barcos en 0,0 en los fors anidados
+        ship.setRow(row);
+        ship.setCol(col);
+        ship.setDirection(direction);
+
         for (int i = 0; i < ship.getSize(); i++) { //podemos cambiar el size por el getsize()
             int r = row + dRow * i;
             int c = col + dCol * i;
