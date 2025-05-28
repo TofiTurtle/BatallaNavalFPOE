@@ -160,20 +160,64 @@ public class OpponentController implements Initializable {
 
 
     public void restoreFrom(boolean[][] occupiedCells, Ship[][] shipMatrix) {
+        double cellSize = 40;
         if (occupiedCells == null || shipMatrix == null) return;
 
         for (int row = 0; row < occupiedCells.length; row++) {
             for (int col = 0; col < occupiedCells[row].length; col++) {
                 if (occupiedCells[row][col] && shipMatrix[row][col] != null) {
-                    Rectangle rect = new Rectangle(40, 40);
-                    rect.setStroke(Color.BLACK);
-                    rect.setStrokeWidth(0.5);
-
+                    //rect.setStroke(Color.BLACK);
+                    //rect.setStrokeWidth(0.5);
                     // Usa el tipo del barco para decidir el color
-                    rect.setFill(Color.DARKRED);
-
+                    //rect.setFill(Color.DARKRED);
+                    //implementacio para ponerle imagenes a esta vainosa*****
                     // Agrega el rectángulo visual al gridpane
-                    opponentGrid.add(rect, col, row);
+                    //opponentGrid.add(rect, col, row); //version del coso gris
+
+                        double width = cellSize;
+                        double height = cellSize;
+                        boolean vertical = shipMatrix[row][col].getDirection().equals("UP") || shipMatrix[row][col].getDirection().equals("DOWN");
+
+                        if (vertical) {
+                            height = shipMatrix[row][col].getSize() * cellSize;
+                        } else {
+                            width = shipMatrix[row][col].getSize() * cellSize;
+                        }
+                        Rectangle rect = new Rectangle(width, height);
+                        String imageName = switch (shipMatrix[row][col].getSize()) {
+                            case 1 -> "frigate";
+                            case 2 -> "destroyer";
+                            case 3 -> "submarine";
+                            case 4 -> "carrier";
+                            default -> "default";
+                        };
+
+                        String path = switch (shipMatrix[row][col].getDirection()) {
+                            case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                            case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                            case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                            case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                            default -> "/com/example/batallanavalfpoe/images/default_right.png";
+                        };
+
+                        try {
+                            Image image = new Image(getClass().getResourceAsStream(path));
+                            ImagePattern pattern = new ImagePattern(image);
+                            rect.setFill(pattern);
+                        } catch (Exception e) {
+                            rect.setFill(Color.GRAY);
+                        }
+
+                        opponentGrid.add(rect, shipMatrix[row][col].getCol(), shipMatrix[row][col].getRow());
+
+                        if (vertical) {
+                            GridPane.setRowSpan(rect, shipMatrix[row][col].getSize());
+                        } else {
+                            GridPane.setColumnSpan(rect, shipMatrix[row][col].getSize());
+                        }
+                    //implementacio para ponerle imagenes a esta vainosa*****
+
+
                 }
             }
         }

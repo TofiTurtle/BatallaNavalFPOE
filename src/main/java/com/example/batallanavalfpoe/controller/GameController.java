@@ -126,7 +126,6 @@ public class GameController {
                 gameState.getPlayerShots(),
                 gameState.getOccupiedPlayerCells()
         );
-
         opponentBoard.restoreBoard(
                 gameState.getMachineShips(),
                 gameState.getMachineShots(),
@@ -145,6 +144,37 @@ public class GameController {
                 gameState.getMachineShips()
         );
 
+        /**
+         Rectangle cell = playerBoard.createCell();
+         cell.setOnMouseClicked(e -> handlePlayerGridClick(e, r, c));
+         cell.setStyle("-fx-background-color: TRANSPARENT;");
+         playerGrid.add(cell, c, r);
+
+
+         // Pintar si había un barco en esa celda
+         if (playerBoard.isOccupied(r, c)) {
+         cell.setFill(Color.DARKTURQUOISE); // o alguna imagen si usas `ImagePattern`
+         }
+
+         // Pintar disparos recibidos
+         if (playerBoard.getshotsOnterritory(r,c)) {
+         if (playerBoard.isOccupied(r,c)) {
+         cell.setFill(Color.RED); // impacto
+         } else {
+         cell.setFill(Color.BLUE); // agua
+         }
+         }
+         **/
+
+        System.out.println("Estado de la matriz playerBoard.getShips():");
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                Ship s = playerBoard.getShips()[row][col];
+                if (s != null) {
+                    System.out.println("Barco en [" + row + "," + col + "] -> dirección: " + s.getDirection() + ", tamaño: " + s.getSize());
+                }
+            }
+        }
         //restauramos las vainas del player
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
@@ -156,19 +186,52 @@ public class GameController {
                 cell.setStyle("-fx-background-color: TRANSPARENT;");
                 playerGrid.add(cell, c, r);
 
-                // Pintar si había un barco en esa celda
-                if (playerBoard.isOccupied(r, c)) {
-                    cell.setFill(Color.DARKTURQUOISE); // o alguna imagen si usas `ImagePattern`
+                if(playerBoard.getShips()[r][c] == null){
+                    continue;
                 }
 
-                // Pintar disparos recibidos
-                if (playerBoard.getshotsOnterritory(r,c)) {
-                    if (playerBoard.isOccupied(r,c)) {
-                        cell.setFill(Color.RED); // impacto
-                    } else {
-                        cell.setFill(Color.BLUE); // agua
-                    }
+                double width = 40;
+                double height = 40;
+                boolean vertical = playerBoard.getShips()[row][col].getDirection().equals("UP") || playerBoard.getShips()[row][col].getDirection().equals("DOWN");
+
+                if (vertical) {
+                    height = playerBoard.getShips()[row][col].getSize() * 40;
+                } else {
+                    width = playerBoard.getShips()[row][col].getSize() * 40;
                 }
+                Rectangle rect = new Rectangle(width, height);
+                String imageName = switch (playerBoard.getShips()[row][col].getSize()) {
+                    case 1 -> "frigate";
+                    case 2 -> "destroyer";
+                    case 3 -> "submarine";
+                    case 4 -> "carrier";
+                    default -> "default";
+                };
+
+                String path = switch (playerBoard.getShips()[row][col].getDirection()) {
+                    case "UP" -> "/com/example/batallanavalfpoe/images/" + imageName + "_up.png";
+                    case "DOWN" -> "/com/example/batallanavalfpoe/images/" + imageName + "_down.png";
+                    case "LEFT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_left.png";
+                    case "RIGHT" -> "/com/example/batallanavalfpoe/images/" + imageName + "_right.png";
+                    default -> "/com/example/batallanavalfpoe/images/default_right.png";
+                };
+
+                try {
+                    Image image = new Image(getClass().getResourceAsStream(path));
+                    ImagePattern pattern = new ImagePattern(image);
+                    rect.setFill(Color.RED);
+                } catch (Exception e) {
+                    rect.setFill(Color.GRAY);
+                }
+
+                playerGrid.add(rect, playerBoard.getShips()[row][col].getCol(), playerBoard.getShips()[row][col].getRow());
+
+                if (vertical) {
+                    GridPane.setRowSpan(rect, playerBoard.getShips()[row][col].getSize());
+                } else {
+                    GridPane.setColumnSpan(rect, playerBoard.getShips()[row][col].getSize());
+                }
+
             }
         }
 
