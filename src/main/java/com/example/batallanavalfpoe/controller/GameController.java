@@ -378,6 +378,7 @@ public class GameController {
 
 
     private void setupNewGame() {
+        saveGame();//ojo vivo, toca guardar partida aqui para que no pase bug q menciono valeria
         /*
         Se crea un opponent stage debido a como valeria crea los barcos del oponente,
         ella los crea en un stage totalmente diferente al gridpane del oponente (el principal)
