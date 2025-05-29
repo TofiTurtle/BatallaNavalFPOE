@@ -78,6 +78,11 @@ public class GameController {
     Image space = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/space.png"));
     ImagePattern spacePattern = new ImagePattern(space);
 
+    Image sunk = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/sunk.png"));
+    ImagePattern sunkPattern = new ImagePattern(sunk);
+
+
+
     // clase interna para las excepciones propias del juego
     public class InvalidShipPlacementException extends Exception {
         public InvalidShipPlacementException(String message) {
@@ -276,13 +281,20 @@ public class GameController {
                     /* tuve q crear esto aca a lo ultimo para q la imagen de tocado y eso se pusieran encima
                     del barco, este for es solo para agregar las imagenes de tocado al tablero del jugador
                      */
+
                     for (int rows = 0; rows < 10; rows++) {
                         for (int cols = 0; cols < 10; cols++) {
                             //ponemos lo de tocado y demas en el tablero del jugador
                             if (playerBoard.getshotsOnterritory(rows, cols)) {
                                 Rectangle effect = new Rectangle(40, 40);
                                 if (playerBoard.isOccupied(rows, cols)) {
-                                    effect.setFill(hitPattern);
+                                    Ship hitShip = playerBoard.getShip(rows, cols); // esto debes implementarlo
+                                    if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                                        effect.setFill(sunkPattern); // se pone la imagen de q se hundio
+                                    } else {
+                                        effect.setFill(hitPattern); // se pone la imagen de q se toco
+                                    }
+
                                 } else {
                                     effect.setFill(spacePattern);
                                 }
@@ -305,7 +317,12 @@ public class GameController {
                 //colorear las celdas del oponente
                 if (opponentBoard.getshotsOnterritory(row,col)) {
                     if (opponentBoard.isOccupied(row,col)) {
-                        cell.setFill(hitPattern); // impacto
+                        Ship hitShip = opponentBoard.getShip(row, col); // esto debes implementarlo
+                        if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
+                            cell.setFill(sunkPattern); // se pone la imagen de q se hundio
+                        } else {
+                            cell.setFill(hitPattern); // se pone la imagen de q se toco
+                        }
                     } else {
                         cell.setFill(spacePattern); // agua
                     }
@@ -589,7 +606,6 @@ public class GameController {
             //registramos el disparo de el jugador
             playerHits++;
             System.out.println(playerHits);
-            shotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
             winFunction();//llamamos condicion de victoria
 
             // 1. Obtener el barco que fue impactado
@@ -601,11 +617,14 @@ public class GameController {
             // 3. ¿Está hundido?
             if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
                 System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por el JUGADOR.");
+                shotRectangle.setFill(sunkPattern); // se pone la imagen de q se hundio
+
 
             } else {
                 System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
-
+                shotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
             }
+
             saveGame();
             shootingTurn = true; //sigue teniendo el turno, puede acceder al evento again
 
@@ -649,7 +668,6 @@ public class GameController {
                 //registramos el disparo acertado de la machin
                 machineHits++;
                 System.out.println(machineHits);
-                machineShotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
                 winFunction();
 
                 // 1. Obtener el barco que fue impactado
@@ -661,9 +679,12 @@ public class GameController {
                 // 3. ¿Está hundido?
                 if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
                     System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por la MAQUINA.");
+                    machineShotRectangle.setFill(sunkPattern); // se pone la imagen de q se toco
 
                 } else {
                     System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " lo ha tocado la MAQUINA.");
+                    machineShotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
+
                 }
 
                 saveGame(); //OJO VIVITO; GUARDAMOS LA PARTIDA AQUI; DESPUES DE HACER TIRO ACERTADO
