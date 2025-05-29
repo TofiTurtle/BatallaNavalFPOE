@@ -122,20 +122,37 @@ public class GameController {
         //serialiable siuu siu siu toilet anasdasdas
         serializableFileHandler = new SerializableFileHandler();
     }
+
     private void winFunction() {
         //FUNCION PARA MOSTRAR MENSAJE DE VICTORIA
         if (playerHits == 20) {
             titleLabel.setText("Haz conseguido la victoria!");
             playerGrid.setDisable(true);
             opponentGrid.setDisable(true);
+            playButton.setDisable(true);
+            playButton.setVisible(false);
+            opponentButton.setDisable(true);
+            opponentButton.setVisible(false);
+            buttonsHBox.getChildren().remove(playButton);
+            buttonsHBox.getChildren().remove(opponentButton);
+            buttonsHBox.setAlignment(Pos.CENTER);
+
         } else if (machineHits == 20) {
             titleLabel.setText("Haz sido derrotado...");
             playerGrid.setDisable(true);
             opponentGrid.setDisable(true);
+            playButton.setDisable(true);
+            playButton.setVisible(false);
+            opponentButton.setDisable(true);
+            opponentButton.setVisible(false);
+            opponentButton.setDisable(true);
+            opponentButton.setVisible(false);
+            buttonsHBox.getChildren().remove(playButton);
+            buttonsHBox.getChildren().remove(opponentButton);
+            buttonsHBox.setAlignment(Pos.CENTER);
         }
     }
     private void loadSavedGame() {
-        winFunction(); //comprobamos si ya gano, pq si si, se bloquea todou
         playButton.setText("Continuar");//
 
         System.out.println(">> Cargando partida guardada...");
@@ -161,6 +178,8 @@ public class GameController {
         System.out.println(playerHits);
         machineHits = gameState.getMachineShotsSaved();
         System.out.println(machineHits);
+        winFunction(); //comprobamos si ya gano, pq si si, se bloquea todou
+
 
         //le damos la llave de que en este caso ESTA CON UNA PARTIDA INICIADA OJO
         OpponentController.setRestoredFromSavedGame(true);
@@ -821,6 +840,7 @@ public class GameController {
         // cambiaos el etxto pa q ya no se vea pon tus flotas
         titleLabel.setText("Que la fuerza te acompañe...");
         fleetLabel.setVisible(false); //quitamos el label que muestra en el fleetbox
+        winFunction(); //por si ya gano, pues muestre
 
         // actualizamos el titulo en gamestate
         if (gameState != null) {
