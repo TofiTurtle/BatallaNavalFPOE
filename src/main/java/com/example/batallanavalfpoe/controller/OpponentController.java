@@ -35,13 +35,21 @@ public class OpponentController implements Initializable {
         isRestoredFromSavedGame = restored;
     }
 
+    // Clase interna para encapsular la lógica de añadir barcos a la flota
+    private static class FleetFactory {
+        public static void addFleet(List<Ship> fleet, int size, String name, int count) {
+            for (int i = 0; i < count; i++) {
+                fleet.add(new Ship(size, name, 0, "default"));
+            }
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        addFleet(4, "Portaviones", 1);
-        addFleet(3, "Submarino", 2);
-        addFleet(2, "Destructor", 3);
-        addFleet(1, "Fragata", 4);
+        FleetFactory.addFleet(fleet,4, "Portaviones", 1);
+        FleetFactory.addFleet(fleet,3, "Submarino", 2);
+        FleetFactory.addFleet(fleet,2, "Destructor", 3);
+        FleetFactory.addFleet(fleet,1, "Fragata", 4);
 
         opponentBoard = new GameBoard(BOARD_ROWS, BOARD_COLS);
         opponentBoard.setupGrid(opponentGrid);
@@ -213,19 +221,4 @@ public class OpponentController implements Initializable {
             }
         }
     }
-
-    //esta funcion se modifica despues, para que dependiendo del tipo y direccion, le ponga pues
-    //la imagen correspondiente del barco
-    private Paint getShipColorByType(String type) {
-        return switch (type.toLowerCase()) {
-            case "frigate" -> Color.DARKBLUE;
-            case "destroyer" -> Color.FIREBRICK;
-            case "submarine" -> Color.DARKGREEN;
-            case "carrier" -> Color.GOLDENROD;
-            default -> Color.GRAY;
-        };
-    }
-
-
-
 }
