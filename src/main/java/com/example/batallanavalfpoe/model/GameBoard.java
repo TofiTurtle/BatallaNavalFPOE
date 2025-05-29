@@ -30,11 +30,6 @@ public class GameBoard implements Serializable {
         return ShotsOnterritory[row][col];
     }
 
-    // metodo auxiliar que uso en gamecontroller para ver la ubicacion de los barcos
-    public boolean getOccupiedCellsPlayer(int row, int col) {
-        return occupiedCells[row][col];
-    }
-
 
     //metodo setter para marcar los shots en el territorio nuestro
     /*Como breve extension de explicacion de esta vuelta, vamos a hacer que asi como el usuario

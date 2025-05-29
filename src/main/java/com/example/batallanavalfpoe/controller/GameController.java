@@ -71,8 +71,19 @@ public class GameController {
     private int playerHits = 0;
     private int machineHits = 0;
 
+    // esto es pa poner la imagen de tocado y de agua (en este caso espacio pq agua no tiene sentido)
+    Image hit = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/hit.png"));
+    ImagePattern hitPattern = new ImagePattern(hit);
 
+    Image space = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/space.png"));
+    ImagePattern spacePattern = new ImagePattern(space);
 
+    // clase interna para las excepciones propias del juego
+    public class InvalidShipPlacementException extends Exception {
+        public InvalidShipPlacementException(String message) {
+            super(message);
+        }
+    }
 
 
     //a nuestro atributo gamestate le copiamos el objeto con los datos
@@ -84,10 +95,16 @@ public class GameController {
     Esta funcion recibe como parametro una imagen y l apone en el imageView
     de game
      */
-    public void setCharacterImage(Image image) {
+    public void setCharacterImage(Image image) { // excepción no marcada (utilizando null)
         this.pendingCharacterImage = image;
-        if (img != null) {
-            img.setImage(image);
+        try {
+            if (img != null) {
+                img.setImage(image);
+            } else {
+                throw new NullPointerException("ImageView 'img' no esta inicializado");
+            }
+        } catch (NullPointerException e) {
+            System.err.println("Advertencia: " + e.getMessage());
         }
     }
 
@@ -126,7 +143,7 @@ public class GameController {
     private void winFunction() {
         //FUNCION PARA MOSTRAR MENSAJE DE VICTORIA
         if (playerHits == 20) {
-            titleLabel.setText("Haz conseguido la victoria!");
+            titleLabel.setText("Has conseguido la victoria");
             playerGrid.setDisable(true);
             opponentGrid.setDisable(true);
             playButton.setDisable(true);
@@ -138,7 +155,7 @@ public class GameController {
             buttonsHBox.setAlignment(Pos.CENTER);
 
         } else if (machineHits == 20) {
-            titleLabel.setText("Haz sido derrotado...");
+            titleLabel.setText("Has sido derrotado...");
             playerGrid.setDisable(true);
             opponentGrid.setDisable(true);
             playButton.setDisable(true);
@@ -160,7 +177,6 @@ public class GameController {
 
         //restauramos el titulo del juego
         titleLabel.setText(gameState.getTitleText());
-
 
         //copiamos en los tableros las vainas que ya traemos desde el gamestate
         playerBoard.restoreBoard(
@@ -257,6 +273,24 @@ public class GameController {
                     }
                     rect.toFront(); //las traemos al frente, para que no queden "detras" de la grilla
 
+                    /* tuve q crear esto aca a lo ultimo para q la imagen de tocado y eso se pusieran encima
+                    del barco, este for es solo para agregar las imagenes de tocado al tablero del jugador
+                     */
+                    for (int rows = 0; rows < 10; rows++) {
+                        for (int cols = 0; cols < 10; cols++) {
+                            //ponemos lo de tocado y demas en el tablero del jugador
+                            if (playerBoard.getshotsOnterritory(rows, cols)) {
+                                Rectangle effect = new Rectangle(40, 40);
+                                if (playerBoard.isOccupied(rows, cols)) {
+                                    effect.setFill(hitPattern);
+                                } else {
+                                    effect.setFill(spacePattern);
+                                }
+                                playerGrid.add(effect, cols, rows);
+                                effect.toFront(); // la imagen se pone encima del barco
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -271,9 +305,9 @@ public class GameController {
                 //colorear las celdas del oponente
                 if (opponentBoard.getshotsOnterritory(row,col)) {
                     if (opponentBoard.isOccupied(row,col)) {
-                        cell.setFill(Color.RED); // impacto
+                        cell.setFill(hitPattern); // impacto
                     } else {
-                        cell.setFill(Color.BLUE); // agua
+                        cell.setFill(spacePattern); // agua
                     }
                 }
             }
@@ -542,7 +576,7 @@ public class GameController {
         double width = 40;
         double height = 40;
         Rectangle shotRectangle = new Rectangle(width, height);
-        shotRectangle.setStroke(Color.GREEN); //color vistoso pa confirmar q sise pone
+        shotRectangle.toFront(); // la imagen se pone encima del barco
 
         //lo mostramos en el opponent grid
         opponentGrid.add(shotRectangle, shotCol, shotRow);
@@ -555,6 +589,7 @@ public class GameController {
             //registramos el disparo de el jugador
             playerHits++;
             System.out.println(playerHits);
+            shotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
             winFunction();//llamamos condicion de victoria
 
             // 1. Obtener el barco que fue impactado
@@ -576,6 +611,7 @@ public class GameController {
 
         } else {
             System.out.println("MISS!!!! awwww------------------");
+            shotRectangle.setFill(spacePattern); // se pone la imagen de espacio si fallo
             saveGame();
             shootingTurn = false; //pierde el turno
             opponentGrid.setDisable(true); //hacemos esto para que el jugador NO SIGA TIRANDO A QUEMARROPA. falla->bloqueamos
@@ -602,8 +638,6 @@ public class GameController {
             double width = 40;
             double height = 40;
             Rectangle machineShotRectangle = new Rectangle(width, height);
-            machineShotRectangle.setStroke(Color.RED); //color vistoso pa confirmar q sise pone
-
 
             //colocamos en nuestro playergrid donde cayo el tiro, para corroborar q si se hizo
             playerGrid.add(machineShotRectangle, MachineshotCol, MachineshotRow);
@@ -615,6 +649,7 @@ public class GameController {
                 //registramos el disparo acertado de la machin
                 machineHits++;
                 System.out.println(machineHits);
+                machineShotRectangle.setFill(hitPattern); // se pone la imagen de q se toco
                 winFunction();
 
                 // 1. Obtener el barco que fue impactado
@@ -635,6 +670,7 @@ public class GameController {
                 processMachineShot(); //llamamos recursivamente, por problema de bucles, a que maquina siga tirando
             }else {
                 System.out.println("La maquina FALLO");
+                machineShotRectangle.setFill(spacePattern); // se pone la imagen de espacio si fallo
                 saveGame(); //OJO VIVITO: SE GUARDA LA PARTIDA TAMBIEN POR SI LA MACHINE FALLA
                 opponentGrid.setDisable(false); //si la maquina falla, volvemos a activar Ogrid pa que siga tirando
 
@@ -664,14 +700,14 @@ public class GameController {
             case "RIGHT" -> startCol = col;
         }
 
-        //OJO atento creo q Este condicional sobra, pues en la funcion de abajo ya se hace la verificacion
-      // if (!playerBoard.isWithinBounds(startRow, startCol)) {
-        //    return; // Fuera de límites
-       //}
-
         // Validar colocación usando el metodo del modelo
-        if (!playerBoard.canPlaceShip(startRow, startCol, selectedShipSize, shipDirection)) {
-            return; // No se puede colocar (ocupado o fuera de límites)
+        try { // Uso de excepción propia al colocar barcos
+            if (!playerBoard.canPlaceShip(startRow, startCol, selectedShipSize, shipDirection)) {
+                throw new InvalidShipPlacementException("No se puede colocar el barco aqui.");
+            }
+        } catch (InvalidShipPlacementException e) {
+            System.err.println("Error: " + e.getMessage()); // EXCEPCION SI NO SE PUEDE PONER BARKO
+            return;
         }
 
         //mini funcion para darle nombre
@@ -838,7 +874,7 @@ public class GameController {
         gridDisabled = false;
 
         // cambiaos el etxto pa q ya no se vea pon tus flotas
-        titleLabel.setText("Que la fuerza te acompañe...");
+        titleLabel.setText("que la fuerza te acompañe...");
         fleetLabel.setVisible(false); //quitamos el label que muestra en el fleetbox
         winFunction(); //por si ya gano, pues muestre
 
@@ -853,10 +889,15 @@ public class GameController {
 
 
     @FXML
-    private void goToWelcomeStage(ActionEvent event) throws IOException {
-        new WelcomeStage().show();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
+    private void goToWelcomeStage(ActionEvent event) { //  Excepciones marcadas al cambiar de ventana
+        try {
+            new WelcomeStage().show();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
+            opponentStage.close();
+        } catch (IOException e) {
+            System.err.println("Error al abrir la pantalla de bienvenida: " + e.getMessage()); // usamos err pa q se vea rojo
+        }
     }
 
     @FXML
