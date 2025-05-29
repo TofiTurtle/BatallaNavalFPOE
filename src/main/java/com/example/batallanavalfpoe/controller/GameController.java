@@ -135,6 +135,9 @@ public class GameController {
         }
     }
     private void loadSavedGame() {
+        winFunction(); //comprobamos si ya gano, pq si si, se bloquea todou
+        playButton.setText("Continuar");//
+
         System.out.println(">> Cargando partida guardada...");
 
 
@@ -153,7 +156,11 @@ public class GameController {
                 gameState.getMachineShots(),
                 gameState.getOccupiedMachineCells()
         );
-
+        //reestablescamos los tiros
+        playerHits = gameState.getPlayerShotsSaved();
+        System.out.println(playerHits);
+        machineHits = gameState.getMachineShotsSaved();
+        System.out.println(machineHits);
 
         //le damos la llave de que en este caso ESTA CON UNA PARTIDA INICIADA OJO
         OpponentController.setRestoredFromSavedGame(true);
@@ -849,8 +856,13 @@ public class GameController {
         boolean[][] machineShots = opponentBoard.getShotsBoard();
         boolean[][] occupiedMachineCells = opponentBoard.getOccupiedCells();
 
+        //tenemos que guardar tambien los estados
+        int playerShotSaved = playerHits;
+        int machineShotSaved = machineHits;
+        int[] shotsData = {playerShotSaved, machineShotSaved};
+
         //ahora si, creamos el objeto gamestate, pues ya tenemos listos sus atributicos
-        GameState gameState = new GameState(playerShips, playerShots,occupiedPlayerCells, machineShips, machineShots,occupiedMachineCells, titleLabel.getText());
+        GameState gameState = new GameState(playerShips, playerShots,occupiedPlayerCells, machineShips, machineShots,occupiedMachineCells, titleLabel.getText(),shotsData);
 
         //por ultimito, sencillamente le pasamos nuestro estado del juego al papuserializador
         serializableFileHandler.serialize("game_data.ser", gameState);
