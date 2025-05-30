@@ -78,7 +78,7 @@ public class GameController {
     Image space = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/space.png"));
     ImagePattern spacePattern = new ImagePattern(space);
 
-    Image sunk = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/sunk.png"));
+    Image sunk = new Image(getClass().getResourceAsStream("/com/example/batallanavalfpoe/images/sunk.jpg"));
     ImagePattern sunkPattern = new ImagePattern(sunk);
 
 
@@ -619,6 +619,33 @@ public class GameController {
                 System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por el JUGADOR.");
                 shotRectangle.setFill(sunkPattern); // se pone la imagen de q se hundio
 
+                int startRow = hitShip.getRow();
+                int startCol = hitShip.getCol();
+                int size = hitShip.getSize();
+                String direction = hitShip.getDirection(); // "UP", "DOWN", "LEFT", "RIGHT"
+                System.out.println("startrow: "+ startRow + "\nstartcol" + startCol + "\nsize" + size + "\n direction" + direction);
+
+                // Imagen cualquiera que quieras aplicar
+                for (int i = 0; i < size; i++) {
+                    int currentRow = startRow;
+                    int currentCol = startCol;
+
+                    // Calcular la posición actual según la dirección
+                    // (-1) * (-1) = 1 :v:v:VVVV:vV:v
+                    switch (direction) {
+                        case "UP" -> currentRow = startRow + i;
+                        case "DOWN" -> currentRow = startRow + i;
+                        case "LEFT" -> currentCol = startCol + i;
+                        case "RIGHT" -> currentCol = startCol + i;
+                    }
+                    //System.out.println("currentRow: " + currentRow + " currentCol: " + currentCol);
+                    // Crear un rectángulo para esta celda
+                    Rectangle rect = new Rectangle(40, 40);
+                    rect.setFill(sunkPattern);
+                    // Añadir al grid en la posición correspondiente
+                    opponentGrid.add(rect, currentCol, currentRow);
+                }
+
 
             } else {
                 System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " Haz acertado tu Tiro! intente de nevo");
@@ -680,6 +707,32 @@ public class GameController {
                 if (hitShip.getHits() >= hitShip.getSize()) { //Si hay IGUAL O MAS HITS QUE SU TAMAÑO es q lo hundieron
                     System.out.println("HUNDIDO!!! 🔥 El " + hitShip.getName() + " ha sido destruido por la MAQUINA.");
                     machineShotRectangle.setFill(sunkPattern); // se pone la imagen de q se toco
+
+
+                    int startRow = hitShip.getRow();
+                    int startCol = hitShip.getCol();
+                    int size = hitShip.getSize();
+                    String direction = hitShip.getDirection(); // "UP", "DOWN", "LEFT", "RIGHT"
+                    System.out.println("startrow: "+ startRow + "\nstartcol" + startCol + "\nsize" + size + "\n direction" + direction);
+
+                    // Imagen cualquiera que quieras aplicar
+                    for (int i = 0; i < size; i++) {
+                        int currentRow = startRow;
+                        int currentCol = startCol;
+
+                        // Calcular la posición actual según la dirección
+                        // (-1) * (-1) = 1 :v:v:VVVV:vV:v
+                        switch (direction) {
+                            case "UP" -> currentRow = startRow + i;
+                            case "DOWN" -> currentRow = startRow + i;
+                            case "LEFT" -> currentCol = startCol + i;
+                            case "RIGHT" -> currentCol = startCol + i;
+                        }
+                        Rectangle rect = new Rectangle(40, 40);
+                        rect.setFill(sunkPattern);
+                        // Añadir al grid en la posición correspondiente
+                        playerGrid.add(rect, currentCol, currentRow);
+                    }
 
                 } else {
                     System.out.println("TOCADO!!! 💥 Al " + hitShip.getName() + " lo ha tocado la MAQUINA.");
