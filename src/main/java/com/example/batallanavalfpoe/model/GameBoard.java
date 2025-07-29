@@ -7,91 +7,151 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.io.Serializable;
-import java.util.Random;
 
+/**
+ * Represents the game board for the Battleship game.
+ * It manages ships, occupied cells, and shots taken on the territory.
+ */
 public class GameBoard implements Serializable {
+
+    /** Matrix indicating if a cell is occupied by a ship. */
     protected boolean[][] occupiedCells;
-    protected Ship[][] ships; //matriz de ships que almacenaran su informacion
+
+    /** Matrix holding the ships placed on the board. */
+    protected Ship[][] ships;
+
+    /** Number of rows of the board. */
     public int rows;
+
+    /** Number of columns of the board. */
     public int cols;
-    //nueva implementacion de matriz hits, necesaria para poder reestablecer el estado del juego
+
+    /** Matrix indicating if a cell has been shot. */
     protected boolean[][] ShotsOnterritory;
 
-
+    /**
+     * Creates a new game board with the given number of rows and columns.
+     *
+     * @param rows number of rows in the board
+     * @param cols number of columns in the board
+     */
     public GameBoard(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         this.occupiedCells = new boolean[rows][cols];
-        this.ships = new Ship[rows][cols]; //inicializamos nuestra matriz de ships
-        this.ShotsOnterritory = new boolean[rows][cols]; //inicializamos matriz de booleans de ships
+        this.ships = new Ship[rows][cols];
+        this.ShotsOnterritory = new boolean[rows][cols];
     }
-    //mini metodo auxiliar para pillar que la matriz se creo correctamente
+
+    /**
+     * Checks whether a specific cell has been shot.
+     *
+     * @param row row index
+     * @param col column index
+     * @return {@code true} if the cell has been shot, otherwise {@code false}
+     */
     public boolean getshotsOnterritory(int row, int col) {
         return ShotsOnterritory[row][col];
     }
 
-
-    //metodo setter para marcar los shots en el territorio nuestro
-    /*Como breve extension de explicacion de esta vuelta, vamos a hacer que asi como el usuario
-    * maneja el grid de la izquierda, una matri bool que "esta a la izq", pues entonces haremos que
-    * el maneje los tiros que se hagan en su territorio, que se marcaran contradictoriamente en
-    * el metodo proccessmachhin shot.
-    * En pocas palabras, esta matriz se llenara en el metodo del rival, pero SERA del que le disparan*/
-
+    /**
+     * Marks a specific cell as shot on the player's territory.
+     * <p>This matrix is updated when the opponent shoots at the player's grid.</p>
+     *
+     * @param row row index
+     * @param col column index
+     */
     public void setShotsOnterritory(int row, int col) {
         ShotsOnterritory[row][col] = true;
     }
 
-
-    //metodo para poder obtener determinado ship de la matriz
+    /**
+     * Retrieves the ship located at a specific cell.
+     *
+     * @param row row index
+     * @param col column index
+     * @return the {@link Ship} at the specified position, or {@code null} if empty
+     */
     public Ship getShip(int row, int col) {
         return this.ships[row][col];
     }
 
-    /*POR CUESTIONES DE LOGICA, NECESITAMOS COPIAR LAS 3 MATRICES, LA DE GOLPES, LA DE
-    * SHIPS Y LA DE BOOLEANOS CON LAS POSICIONES, ESTO DEBIDO A QUE, PUES, SHIPS DA INFORMACION VALIOSA
-    * Y CON HITS ESTARIAMOS TRIN, PERO NO OLVIDAR QUE MUCHA LOGICA DEL CNTROLLER USA EL OCCUPIEDCELLS,
-    * POR LO QUE ES VITAL COPIAR ESTE*/
+    /**
+     * Returns the entire matrix of ships.
+     *
+     * @return matrix of ships
+     */
     public Ship[][] getShips() {
         return ships;
     }
+
+    /**
+     * Returns the matrix that stores shot information.
+     *
+     * @return matrix of shots
+     */
     public boolean[][] getShotsBoard() {
         return ShotsOnterritory;
     }
+
+    /**
+     * Returns the matrix that stores occupied cell information.
+     *
+     * @return matrix of occupied cells
+     */
     public boolean[][] getOccupiedCells() {
         return occupiedCells;
     }
 
-
-    /*Finalmente, metamosle sabroso con un mismo metodo setter para restaurar datos de una partida siuu*/
+    /**
+     * Restores the board state from the provided matrices.
+     *
+     * @param ships matrix of ships
+     * @param ShotsOnterritory matrix of shots
+     * @param occupiedCells matrix of occupied cells
+     */
     public void restoreBoard(Ship[][] ships, boolean[][] ShotsOnterritory, boolean[][] occupiedCells) {
-        /*con este metodo, basicamente copiamos todou en una misma llamada, nos ahorramos 3 setter */
         this.ships = ships;
         this.ShotsOnterritory = ShotsOnterritory;
         this.occupiedCells = occupiedCells;
     }
-    /*
-    recibe como parametro fila y columna, si estas son menores a las del tablero devuelve true
+
+    /**
+     * Checks if a given cell is within the board boundaries.
+     *
+     * @param row row index
+     * @param col column index
+     * @return {@code true} if the cell is inside the board, otherwise {@code false}
      */
     public boolean isWithinBounds(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
-    /*
-    recordar que e tablero es un arreglo de bool entonces devuelve el bool dependiendo de la fila y columna
+    /**
+     * Checks if a specific cell is occupied by a ship.
+     *
+     * @param row row index
+     * @param col column index
+     * @return {@code true} if the cell is occupied, otherwise {@code false}
      */
     public boolean isOccupied(int row, int col) {
         return occupiedCells[row][col];
     }
 
-    /*
-    pone true en una celda en especifico
+    /**
+     * Marks a specific cell as occupied.
+     *
+     * @param row row index
+     * @param col column index
      */
     public void setOccupied(int row, int col) {
         occupiedCells[row][col] = true;
     }
-    /*
-    muestra las lineas del tablero, fija su tamaño, fija el tamaño de cada celda de 40x40
+
+    /**
+     * Sets up the grid pane for the board, configuring its size and grid lines.
+     *
+     * @param gridPane the grid pane to configure
      */
     public void setupGrid(GridPane gridPane) {
         gridPane.setGridLinesVisible(true);
@@ -102,8 +162,10 @@ public class GameBoard implements Serializable {
         }
     }
 
-    /*
-    crea los rectangulos que simulan las celdas
+    /**
+     * Creates a single cell for the grid as a rectangle.
+     *
+     * @return the rectangle representing the cell
      */
     public Rectangle createCell() {
         Rectangle cell = new Rectangle(40, 40);
@@ -112,8 +174,10 @@ public class GameBoard implements Serializable {
         return cell;
     }
 
-    /*
-    desactiva las celdas
+    /**
+     * Disables all cells in the grid.
+     *
+     * @param grid the grid to deactivate
      */
     public void deactivateGrid(GridPane grid) {
         for (var node : grid.getChildren()) {
@@ -123,8 +187,15 @@ public class GameBoard implements Serializable {
         }
     }
 
-    /*
-    Valida si se puede colocar un barco en el tablero, según dirección y tamaño
+    /**
+     * Validates if a ship can be placed on the board at a specific position,
+     * based on its direction and size.
+     *
+     * @param row starting row index
+     * @param col starting column index
+     * @param size size of the ship
+     * @param direction placement direction ("UP", "DOWN", "LEFT", "RIGHT")
+     * @return {@code true} if the ship can be placed, otherwise {@code false}
      */
     public boolean canPlaceShip(int row, int col, int size, String direction) {
         int dRow = 0, dCol = 0;
@@ -146,10 +217,15 @@ public class GameBoard implements Serializable {
         return true;
     }
 
-    /*
-     Coloca el barco en el tablero actualizando las celdas ocupadas
+    /**
+     * Places a ship on the board and updates the occupied cells.
+     *
+     * @param row starting row index
+     * @param col starting column index
+     * @param ship the ship to be placed
+     * @param direction placement direction ("UP", "DOWN", "LEFT", "RIGHT")
      */
-    public void placeShip(int row, int col,Ship ship, String direction) {
+    public void placeShip(int row, int col, Ship ship, String direction) {
         int dRow = 0, dCol = 0;
 
         switch (direction) {
@@ -159,18 +235,16 @@ public class GameBoard implements Serializable {
             case "RIGHT" -> dCol = 1;
         }
 
-        // Establecer info base del barco (muy importante)
-        //esto es necesario para que no se apilen los barcos en 0,0 en los fors anidados
+        // Set initial position and direction of the ship
         ship.setRow(row);
         ship.setCol(col);
         ship.setDirection(direction);
 
-        for (int i = 0; i < ship.getSize(); i++) { //podemos cambiar el size por el getsize()
+        for (int i = 0; i < ship.getSize(); i++) {
             int r = row + dRow * i;
             int c = col + dCol * i;
             setOccupied(r, c);
             ships[r][c] = ship;
         }
     }
-
 }
