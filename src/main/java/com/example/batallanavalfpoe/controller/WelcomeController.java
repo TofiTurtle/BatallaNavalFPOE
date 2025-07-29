@@ -17,22 +17,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
+/**
+ * Controller class for the welcome screen.
+ * Handles navigation to character selection, game continuation, and rules screens.
+ */
 public class WelcomeController {
-    //Atributo de la clase WelcomeController
-    //necesitamos tener el plaintexthandler
-    PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();
-    //instanciamos el serializador
+    /** Handler for plain text file operations */
+    private PlainTextFileHandler plainTextFileHandler = new PlainTextFileHandler();
+
+    /** Handler for game state serialization/deserialization */
     private SerializableFileHandler serializableFileHandler = new SerializableFileHandler();
 
+    /** Base font used throughout the application */
     Font baseFont = Font.loadFont(getClass().getResourceAsStream("/com/example/batallanavalfpoe/fonts/Strjmono.ttf"), 25);
 
-    //juan: Esta clase tendra 3 buttons, es una bobada pero por orden voy a modificar el
-    /*nombre de un boton, y tambien para seguir mejor el MVc voy a cmabiar como se cargan
-    los archivos.
-    * */
-    //metodos de la clase WelcomeController
-    //Button "Jugar"
+    /**
+     * Handles navigation to the character selection screen.
+     *
+     * @param event The action event that triggered this method
+     * @throws IOException If there's an error loading the character selection stage
+     */
     @FXML
     private void goToCharacterSelector(ActionEvent event) throws IOException {
         CharacterSelectorStage characterstage = new CharacterSelectorStage();
@@ -42,33 +46,39 @@ public class WelcomeController {
         stage.close();
     }
 
-    //Button "Continuar"
-    /*
-     * Aca se hace a lo ultimo la implementacion de los archivos planos y serializables
+    /**
+     * Handles continuation of a saved game.
+     * Loads player data and game state from files and starts the game.
+     *
+     * @param event The action event that triggered this method
+     * @throws IOException If there's an error loading the game data or starting the game
      */
     @FXML
     private void handleClickContinue(ActionEvent event) throws IOException {
         String[] data = plainTextFileHandler.readFromFile("player_data.csv");
-        String playerName = data[0]; //nombre del usuario
-        String characterImagePath = data[1]; //OJO RUTAAA de imagen del usuario
+        String playerName = data[0]; // Player name
+        String characterImagePath = data[1]; // Character image path
 
         Player player = new Player(playerName, characterImagePath);
         System.out.println(playerName + "  ,  " + characterImagePath);
 
-        //aca nos "metemos" en la partida
-        //implementando lo del serializable
-        //esto es "castear" xd? no se, creamos una instancia de gamestate que copie el objeto serializado que teniamos guardao
-        GameState gameState = (GameState) serializableFileHandler.deserialize("game_data.ser"); //deserializamos
-        //vitalToken vale 1 para diferenciar el metodo del controller, indicando que esta en una partida ya comenzada
-        GameStage gameStage =  new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)), playerName, gameState, 1);
+        // Load saved game state
+        GameState gameState = (GameState) serializableFileHandler.deserialize("game_data.ser");
+        // vitalToken = 1 indicates continuing an existing game
+        GameStage gameStage = new GameStage(new Image(getClass().getResourceAsStream(characterImagePath)),
+                playerName, gameState, 1);
         gameStage.show();
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
-
     }
 
-    //Button "Reglas"
+    /**
+     * Handles navigation to the rules screen.
+     *
+     * @param event The action event that triggered this method
+     * @throws IOException If there's an error loading the rules stage
+     */
     @FXML
     private void goToRules(ActionEvent event) throws IOException {
         RulesStage rulesstage = new RulesStage();
