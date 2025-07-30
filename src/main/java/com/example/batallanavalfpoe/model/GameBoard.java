@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Represents the game board for the Battleship game.
  * It manages ships, occupied cells, and shots taken on the territory.
  */
-public class GameBoard implements Serializable {
+public class GameBoard extends GameBoardAdapter implements Serializable {
 
     /** Matrix indicating if a cell is occupied by a ship. */
     protected boolean[][] occupiedCells;
