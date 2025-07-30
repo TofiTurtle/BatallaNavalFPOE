@@ -18,25 +18,37 @@
       </ImageView>
       <VBox alignment="CENTER" prefHeight="785.0" prefWidth="1200.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0">
                <children>
                   <VBox alignment="CENTER" prefHeight="186.0" prefWidth="266.0">
                      <children>
-                        <ImageView fx:id="img" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                        <Label fx:id="nameLabel" textAlignment="CENTER" textFill="WHITE">
+                        <ImageView fx:id="img" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin></ImageView>
+                        <Label fx:id="nameLabel" textFill="WHITE">
                            <font>
                               <Font name="Star Jedi Logo MonoLine" size="25.0" />
                            </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                         </Label>
                      </children>
                      <HBox.margin>
-                        <Insets right="320.0" />
+                        <Insets />
                      </HBox.margin>
                   </VBox>
-                  <Label fx:id="titleLabel" text="Posiciona tus flotas" textAlignment="RIGHT" textFill="WHITE">
+                  <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="Posiciona tus flotas" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font name="Star Jedi Logo MonoLine" size="40.0" />
                      </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <padding>
+                        <Insets left="150.0" />
+                     </padding>
                   </Label>
                </children>
             </HBox>
@@ -93,7 +105,7 @@
 
             <HBox fx:id="buttonsHBox" alignment="CENTER" prefHeight="100.0" spacing="50.0">
                <children>
-                  <Button fx:id="leaveButton" onAction="#goToWelcomeStage" prefHeight="78.0" prefWidth="373.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 10; -fx-border-width: 1.5px;" text="Abandonar juego" textFill="WHITE">
+                  <Button fx:id="leaveButton" onAction="#goToWelcomeStage" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 10; -fx-border-width: 1.5px;" text="Abandonar juego" textFill="WHITE">
                      <font>
                         <Font name="Star Jedi Logo MonoLine" size="24.0" />
                      </font>
